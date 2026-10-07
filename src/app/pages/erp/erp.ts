@@ -11,9 +11,9 @@ const WHATSAPP_NUMBER = '23059046191';
 type FeatureKey = { title: string; desc: string; icon: string };
 
 const PREVIEW_SHOTS: { title: string; img: string }[] = [
-  { title: 'erp_preview1_title', img: '/media/erp/erp-screenshot-pos.png' },
-  { title: 'erp_preview2_title', img: '/media/erp/erp-screenshot-dashboard.png' },
-  { title: 'erp_preview3_title', img: '/media/erp/erp-screenshot-inventory.png' },
+  { title: 'erp_preview1_title', img: 'media/erp/erp-screenshot-pos.png' },
+  { title: 'erp_preview2_title', img: 'media/erp/erp-screenshot-dashboard.png' },
+  { title: 'erp_preview3_title', img: 'media/erp/erp-screenshot-inventory.png' },
 ];
 
 const PAIN_POINTS: FeatureKey[] = [

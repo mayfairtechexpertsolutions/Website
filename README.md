@@ -10,7 +10,7 @@ The site is designed to reflect MayfairTech's philosophy: **Transforming softwar
 * **Mission:** Building proprietary "Technology Backbones" for businesses globally.
 * **Headquarters:** Rose-Hill, Mauritius.
 * **Tech Stack:** Angular 22 (standalone components, signals), statically prerendered at build time — no server runtime, deployed as plain static files. See `CLAUDE.md` for full architecture notes.
-* **Governance:** Managed through GitLab CI/CD for automated Pages deployment.
+* **Governance:** Managed through GitHub Actions for automated GitHub Pages deployment.
 
 ---
 
@@ -56,7 +56,7 @@ While the website itself is an Angular SPA, the projects we deliver for clients 
 ---
 
 ## 5. Deployment & Maintenance
-This site is hosted via **GitLab Pages**.
+This site is hosted via **GitHub Pages** (Settings → Pages → Source: GitHub Actions).
 
 ### Continuous Integration
-The `.gitlab-ci.yml` file installs dependencies, runs the Angular production build (which prerenders every route to static HTML), flattens the `.html`-named routes into literal files, and publishes the result to GitLab Pages on every push to `main`. See `CLAUDE.md` for the full pipeline breakdown.
+The `.github/workflows/deploy.yml` workflow installs dependencies, runs the Angular production build (which prerenders every route to static HTML), flattens the `.html`-named routes into literal files, and publishes the result to GitHub Pages on every push to `main`. See `CLAUDE.md` for the full pipeline breakdown.

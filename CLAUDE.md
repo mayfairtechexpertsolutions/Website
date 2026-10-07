@@ -2,10 +2,10 @@
 
 ## Project Overview
 
-Marketing website for MayfairTech Expert Solutions, built as an **Angular 22 application with static prerendering (SSG)**. Every route is rendered to a real static HTML file at build time — there is no Node server at runtime — so the output deploys to GitLab Pages exactly like the old static site did, just via a build step instead of a raw file copy.
+Marketing website for MayfairTech Expert Solutions, built as an **Angular 22 application with static prerendering (SSG)**. Every route is rendered to a real static HTML file at build time — there is no Node server at runtime — so the output deploys to GitHub Pages exactly like the old static site did, just via a build step instead of a raw file copy.
 
 - **Live URL**: https://mayfairtechexpertsolutions.com/
-- **Hosting**: GitLab Pages (auto-deploys on push to `main`)
+- **Hosting**: GitHub Pages via GitHub Actions (auto-deploys on push to `main`). Until the custom domain is attached it serves from `https://mayfairtechexpertsolutions.github.io/Website/`; to switch, add `public/CNAME`, set the domain in Settings → Pages, and change `BASE_HREF` in the workflow to `/`
 - **Local dev**: run `./run_angular.sh` — installs deps if needed, starts `ng serve`, opens the browser at `http://localhost:4200`.
 
 ---
@@ -22,7 +22,7 @@ Marketing website for MayfairTech Expert Solutions, built as an **Angular 22 app
 | Icons | Font Awesome 6.0 via CDN `<link>` in `src/index.html` (unchanged from the old site) |
 | Fonts | Google Fonts — Playfair Display, Inter (preconnect + stylesheet in `src/index.html`) |
 | Forms | No backend — both forms build a `wa.me` deep link and open it in a new tab, pre-filled with the visitor's answers, so the visitor sends it via WhatsApp Business |
-| CI/CD | GitLab CI (`.gitlab-ci.yml`) — Node image, `npm ci && npm run build`, then a flatten script, then copies `dist/mayfairtech-website/browser/` into `public/` |
+| CI/CD | GitHub Actions (`.github/workflows/deploy.yml`) — Node 24, `npm ci`, `ng build --base-href`, flatten script, then `upload-pages-artifact` + `deploy-pages` on `dist/mayfairtech-website/browser/` |
 
 ---
 
@@ -54,7 +54,7 @@ Marketing website for MayfairTech Expert Solutions, built as an **Angular 22 app
 ├── scripts/flatten-html-routes.mjs   # Post-build fixup — see "Routing" below
 ├── angular.json, package.json, tsconfig*.json
 ├── run_angular.sh               # One-command local dev: correct Node via nvm + ng serve + open browser
-└── .gitlab-ci.yml
+└── .github/workflows/deploy.yml
 ```
 
 The company sells two things through this site: **consulting/partnership services** (`HomeComponent`'s main pitch) and a growing **suite of standalone SaaS products** (home teaser, `products.html` hub, and one page per product). See "Products Architecture" below before adding a new product.
@@ -65,7 +65,7 @@ The company sells two things through this site: **consulting/partnership service
 
 Routes in `app.routes.ts` use literal path strings that include `.html`, e.g. `{ path: 'products.html', component: ProductsComponent }`. This is **not** a mistake — Angular Router path segments are plain strings, a dot has no special meaning, and this preserves the site's existing indexed URLs (`/`, `/products.html`, `/erp.html`, `/privacy.html`, `/terms.html`) exactly, so nothing in `sitemap.xml`, external backlinks, or bookmarks breaks.
 
-Angular's static prerenderer, however, treats every route path as a directory, so a route named `products.html` builds to `dist/.../browser/products.html/index.html` (a **directory**), not a literal file. `scripts/flatten-html-routes.mjs` runs after every build and rewrites each `<name>.html/index.html` into a flat `<name>.html` file. This is required for GitLab Pages (a plain static file server) to resolve `/products.html` correctly — run it any time you build for deployment (the CI pipeline already does this; see `.gitlab-ci.yml`).
+Angular's static prerenderer, however, treats every route path as a directory, so a route named `products.html` builds to `dist/.../browser/products.html/index.html` (a **directory**), not a literal file. `scripts/flatten-html-routes.mjs` runs after every build and rewrites each `<name>.html/index.html` into a flat `<name>.html` file. This is required for GitHub Pages (a plain static file server) to resolve `/products.html` correctly — run it any time you build for deployment (the CI pipeline already does this; see `.github/workflows/deploy.yml`).
 
 All internal links use `routerLink="/products.html"` etc. (matching the literal hrefs) — never Angular's more idiomatic extensionless clean paths.
 
@@ -167,20 +167,14 @@ Each page component calls `SeoService.set({...})` (from `core/seo/seo.service.ts
 ## Deployment
 
 ```yaml
-# .gitlab-ci.yml (simplified)
-image: node:24-alpine
-pages:
-  script:
-    - npm ci
-    - npm run build
-    - node scripts/flatten-html-routes.mjs dist/mayfairtech-website/browser
-    - mkdir public
-    - cp -r dist/mayfairtech-website/browser/. public/
-  only:
-    - main
+# .github/workflows/deploy.yml (simplified)
+on: { push: { branches: [main] } }
+jobs:
+  build:   # npm ci → ng build --base-href "$BASE_HREF" → flatten-html-routes → upload-pages-artifact
+  deploy:  # actions/deploy-pages (environment: github-pages)
 ```
 
-**To deploy:** commit and push to `main`. GitLab CI installs deps, builds + prerenders all 5 routes, flattens the `.html` route directories into literal files, and publishes `public/`.
+**To deploy:** commit and push to `main`. GitHub Actions installs deps, builds + prerenders all 5 routes, flattens the `.html` route directories into literal files, and deploys the output to GitHub Pages.
 
 ---
 
@@ -235,6 +229,6 @@ Run `./run_angular.sh` — it ensures Node ≥22.22.3 (via nvm, falling back to 
 ## Known follow-ups (not yet done)
 
 - **SRI hashes** on the Font Awesome CDN `<link>` and Google Fonts `<link>` in `src/index.html` — carried over unchanged from the old site, still worth adding.
-- **CSP**: no Content-Security-Policy is currently configured; GitLab Pages has no native `_headers`-style mechanism (Netlify/Cloudflare-only convention), so this would need a CDN/reverse-proxy in front of GitLab Pages to enforce.
+- **CSP**: no Content-Security-Policy is currently configured; GitHub Pages has no native `_headers`-style mechanism (Netlify/Cloudflare-only convention), so this would need a CDN/reverse-proxy in front of GitHub Pages to enforce.
 - **`<noscript>` fallback**: the whole site is a JS-rendered Angular SPA now, more so than the old static site — a `<noscript>` message with the fallback email in `src/index.html` would be a reasonable addition.
 - **Icon system**: Font Awesome is still CDN-loaded; migrating to `@fortawesome/angular-fontawesome` with tree-shaken SVG imports would drop the CDN dependency and shrink payload, but touches every icon usage across the app — treat as a separate follow-up.
