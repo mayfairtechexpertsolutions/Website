@@ -159,47 +159,7 @@
       <h2 class="mt-6 mb-4 font-serif text-3xl font-bold text-mayfair-navy md:text-4xl dark:text-white">{{ 'models_title' | translate }}</h2>
       <p class="text-lg text-slate-600 dark:text-slate-300">{{ 'models_subtitle' | translate }}</p>
     </div>
-    <div class="grid grid-cols-1 gap-8 lg:grid-cols-3">
-      <div class="rounded-[2rem] border border-slate-200 bg-white p-8 card-hover dark:border-slate-700 dark:bg-slate-900">
-        <div class="mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-mayfair-navy text-lg text-mayfair-teal">
-          <i class="fas fa-user-shield"></i>
-        </div>
-        <span class="mb-4 inline-block rounded-full bg-mayfair-teal/10 px-3 py-1 text-[10px] font-bold tracking-widest text-mayfair-teal uppercase">{{ 'model1_badge' | translate }}</span>
-        <h3 class="mb-3 font-serif text-xl font-bold text-mayfair-navy dark:text-white">{{ 'model1_title' | translate }}</h3>
-        <p class="mb-4 text-sm leading-relaxed text-slate-600 dark:text-slate-400">{{ 'model1_desc' | translate }}</p>
-        <ul class="space-y-2 text-sm text-slate-500 dark:text-slate-400">
-          <li class="flex items-center gap-2"><i class="fas fa-check text-mayfair-teal"></i>{{ 'model1_li1' | translate }}</li>
-          <li class="flex items-center gap-2"><i class="fas fa-check text-mayfair-teal"></i>{{ 'model1_li2' | translate }}</li>
-          <li class="flex items-center gap-2"><i class="fas fa-check text-mayfair-teal"></i>{{ 'model1_li3' | translate }}</li>
-        </ul>
-      </div>
-      <div class="rounded-[2rem] border border-slate-200 bg-white p-8 card-hover dark:border-slate-700 dark:bg-slate-900">
-        <div class="mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-mayfair-navy text-lg text-mayfair-teal">
-          <i class="fas fa-users-rectangle"></i>
-        </div>
-        <span class="mb-4 inline-block rounded-full bg-mayfair-teal/10 px-3 py-1 text-[10px] font-bold tracking-widest text-mayfair-teal uppercase">{{ 'model2_badge' | translate }}</span>
-        <h3 class="mb-3 font-serif text-xl font-bold text-mayfair-navy dark:text-white">{{ 'model2_title' | translate }}</h3>
-        <p class="mb-4 text-sm leading-relaxed text-slate-600 dark:text-slate-400">{{ 'model2_desc' | translate }}</p>
-        <ul class="space-y-2 text-sm text-slate-500 dark:text-slate-400">
-          <li class="flex items-center gap-2"><i class="fas fa-check text-mayfair-teal"></i>{{ 'model2_li1' | translate }}</li>
-          <li class="flex items-center gap-2"><i class="fas fa-check text-mayfair-teal"></i>{{ 'model2_li2' | translate }}</li>
-          <li class="flex items-center gap-2"><i class="fas fa-check text-mayfair-teal"></i>{{ 'model2_li3' | translate }}</li>
-        </ul>
-      </div>
-      <div class="rounded-[2rem] border border-slate-200 bg-white p-8 card-hover dark:border-slate-700 dark:bg-slate-900">
-        <div class="mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-mayfair-navy text-lg text-mayfair-teal">
-          <i class="fas fa-flag-checkered"></i>
-        </div>
-        <span class="mb-4 inline-block rounded-full bg-mayfair-teal/10 px-3 py-1 text-[10px] font-bold tracking-widest text-mayfair-teal uppercase">{{ 'model3_badge' | translate }}</span>
-        <h3 class="mb-3 font-serif text-xl font-bold text-mayfair-navy dark:text-white">{{ 'model3_title' | translate }}</h3>
-        <p class="mb-4 text-sm leading-relaxed text-slate-600 dark:text-slate-400">{{ 'model3_desc' | translate }}</p>
-        <ul class="space-y-2 text-sm text-slate-500 dark:text-slate-400">
-          <li class="flex items-center gap-2"><i class="fas fa-check text-mayfair-teal"></i>{{ 'model3_li1' | translate }}</li>
-          <li class="flex items-center gap-2"><i class="fas fa-check text-mayfair-teal"></i>{{ 'model3_li2' | translate }}</li>
-          <li class="flex items-center gap-2"><i class="fas fa-check text-mayfair-teal"></i>{{ 'model3_li3' | translate }}</li>
-        </ul>
-      </div>
-    </div>
+    <app-models-accordion [models]="engagementModels" />
   </div>
 </section>
 

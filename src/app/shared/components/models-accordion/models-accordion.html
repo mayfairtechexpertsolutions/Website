@@ -1,0 +1,34 @@
+<div class="flex flex-col gap-4 lg:flex-row">
+  @for (model of models(); track model.titleKey; let i = $index) {
+    <article [class]="panelClass(i)" (mouseenter)="activate(i)">
+      <div class="mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-mayfair-teal/15 text-lg text-mayfair-teal">
+        <i class="fas" [class]="model.icon" aria-hidden="true"></i>
+      </div>
+      <h3 [class]="titleClass(i)">
+        <button
+          type="button"
+          class="text-left focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-mayfair-teal after:absolute after:inset-0 after:content-['']"
+          [attr.aria-expanded]="i === activeIndex()"
+          [attr.aria-controls]="'model-panel-' + i"
+          (click)="activate(i)"
+          (focus)="activate(i)"
+        >
+          {{ model.titleKey | translate }}
+        </button>
+      </h3>
+      @if (i === activeIndex()) {
+        <div [id]="'model-panel-' + i" class="animate-fade-in mt-4">
+          <span class="mb-4 inline-block rounded-full bg-mayfair-teal/15 px-3 py-1 text-[10px] font-bold tracking-widest text-mayfair-teal uppercase">
+            {{ model.badgeKey | translate }}
+          </span>
+          <p class="mb-4 text-sm leading-relaxed text-slate-200">{{ model.descKey | translate }}</p>
+          <ul class="space-y-2 text-sm text-slate-200">
+            @for (featureKey of model.featureKeys; track featureKey) {
+              <li class="flex items-center gap-2"><i class="fas fa-check text-mayfair-teal" aria-hidden="true"></i>{{ featureKey | translate }}</li>
+            }
+          </ul>
+        </div>
+      }
+    </article>
+  }
+</div>
