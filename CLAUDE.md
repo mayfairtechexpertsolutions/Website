@@ -52,6 +52,7 @@ Marketing website for MayfairTech Expert Solutions, built as an **Angular 22 app
 │   ├── media/                   # logo.png, only_logo.png, social-preview.png
 │   ├── favicon.ico, robots.txt, sitemap.xml
 ├── scripts/flatten-html-routes.mjs   # Post-build fixup — see "Routing" below
+├── .postcssrc.json             # Registers @tailwindcss/postcss — without it Tailwind is NOT compiled and the site is unstyled
 ├── angular.json, package.json, tsconfig*.json
 ├── run_angular.sh               # One-command local dev: correct Node via nvm + ng serve + open browser
 └── .github/workflows/deploy.yml
@@ -154,6 +155,7 @@ export const PRODUCTS: Product[] = [
 - **`GlobeComponent`**: hand-rolled SVG 3D globe animation (no library) — spherical (lon, lat) → screen projection with a continuously incrementing rotation angle via `requestAnimationFrame`. Guarded behind `isPlatformBrowser` (mandatory — rAF/SVG DOM writes must not run during the Node-based prerender pass) and cancels its animation frame in `ngOnDestroy`.
 - **`SavingsCalculatorComponent`**: `computed()` over a `staffCount` signal and `TranslationService.currentLang()` — recomputes automatically on both input and language change, no manual re-invocation wiring needed.
 - **`ContactFormComponent`** (home) / inline trial form in `ErpComponent`: Angular reactive forms (`FormBuilder`). On submit, builds a plain-text summary of the answers and opens `https://wa.me/<MayfairTech WhatsApp Business number>?text=<encoded summary>` in a new tab — the visitor still has to hit Send inside WhatsApp, since there is no backend to deliver it silently. Tracks `idle | success | error` in a signal (`success` means the link opened, not that the visitor sent it), swaps in a success card via `@if`.
+- **Motion/effects (Phase 1)**: `ScrollStateService` (`core/services/`) exposes a `scrolled` signal — the navbar shrinks and gains a stronger shadow when it's true. `PointerParallaxDirective` (`appPointerParallax`, on the home hero) writes `--px`/`--py` (-1..1) CSS vars; `.globe-tilt` in `styles.css` turns them into a 3D tilt on the globe, with a `.globe-glow` halo behind it. `SectionDividerComponent` (`<app-section-divider />`) is the glowing line + diamond between sections. `.text-gradient-hero` (hero headline gradient) and `.btn-glow` (pulsing CTA) are plain CSS classes. `appReveal` accepts `[revealDelay]` (ms) to stagger sibling cards. Everything honours `prefers-reduced-motion` (CSS media query, and the directive skips its listener).
 - **`RevealDirective`** (`appReveal`): replaces the old `.reveal` class + manual `IntersectionObserver` — a single shared observer lives in `RevealObserverService` (`providedIn: 'root'`), and the directive registers/unregisters its host element in `ngOnInit`/`ngOnDestroy`.
 
 ---

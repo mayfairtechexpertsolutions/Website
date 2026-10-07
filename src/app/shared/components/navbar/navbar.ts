@@ -4,6 +4,7 @@ import { filter } from 'rxjs';
 import { TranslatePipe } from '../../../core/i18n/translate.pipe';
 import { PRODUCTS } from '../../../core/products/products.data';
 import { MobileMenuService } from '../../../core/services/mobile-menu.service';
+import { ScrollStateService } from '../../../core/services/scroll-state.service';
 import { LanguageSwitcherComponent } from '../language-switcher/language-switcher';
 import { ERP_NAV_LINKS, MAIN_NAV_LINKS } from './nav-link.model';
 
@@ -16,6 +17,7 @@ import { ERP_NAV_LINKS, MAIN_NAV_LINKS } from './nav-link.model';
 export class NavbarComponent {
   protected readonly mobileMenu = inject(MobileMenuService);
   protected readonly products = PRODUCTS;
+  protected readonly isScrolled = inject(ScrollStateService).scrolled;
 
   private readonly router = inject(Router);
   protected readonly isErpPage = signal(this.router.url.startsWith('/erp.html'));

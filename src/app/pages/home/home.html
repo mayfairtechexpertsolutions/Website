@@ -1,13 +1,13 @@
-<header class="relative overflow-hidden bg-mayfair-navy px-6 pt-12 pb-24 md:pt-16 md:pb-32">
+<header appPointerParallax class="relative overflow-hidden bg-mayfair-navy px-6 pt-12 pb-24 md:pt-16 md:pb-32">
   <div class="relative z-10 mx-auto grid max-w-7xl items-center gap-16 lg:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]">
     <div class="max-w-2xl">
       <span class="mb-8 inline-block rounded-full border border-mayfair-teal/30 bg-mayfair-teal/5 px-4 py-1.5 text-xs font-bold tracking-[0.3em] text-mayfair-teal uppercase">
         {{ 'hero_badge' | translate }}
       </span>
-      <h1 class="mb-8 font-serif text-4xl leading-[1.1] font-bold text-white md:text-6xl" [innerHTML]="'hero_title' | translate"></h1>
+      <h1 class="text-gradient-hero mb-8 font-serif text-4xl leading-[1.1] font-bold md:text-6xl" [innerHTML]="'hero_title' | translate"></h1>
       <p class="mb-10 max-w-xl text-lg leading-relaxed text-slate-300 md:text-xl">{{ 'hero_subtitle' | translate }}</p>
       <div class="flex flex-col gap-4 sm:flex-row">
-        <a routerLink="/" fragment="models" class="rounded-xl bg-mayfair-teal px-8 py-4 text-center text-lg font-bold text-white shadow-xl transition-all hover:-translate-y-0.5 hover:bg-white hover:text-mayfair-navy">
+        <a routerLink="/" fragment="models" class="btn-glow rounded-xl bg-mayfair-teal px-8 py-4 text-center text-lg font-bold text-white shadow-xl transition-all hover:-translate-y-0.5 hover:bg-white hover:text-mayfair-navy">
           {{ 'hero_btn_models' | translate }}
         </a>
         <a routerLink="/" fragment="concept" class="rounded-xl border border-white/20 px-8 py-4 text-center text-lg font-bold text-white transition-all hover:bg-white/10">
@@ -27,11 +27,16 @@
       </div>
     </div>
 
-    <div class="hidden aspect-square w-full pointer-events-none select-none lg:block" aria-hidden="true">
-      <app-globe />
+    <div class="relative hidden aspect-square w-full pointer-events-none select-none lg:block" aria-hidden="true">
+      <div class="globe-glow absolute inset-[8%] rounded-full"></div>
+      <div class="globe-tilt relative size-full">
+        <app-globe />
+      </div>
     </div>
   </div>
 </header>
+
+<app-section-divider />
 
 <section id="concept" class="mx-auto max-w-7xl px-6 py-24" appReveal>
   <div class="mx-auto mb-16 max-w-2xl text-center">
@@ -44,7 +49,7 @@
     <div class="absolute top-1/2 left-1/2 z-10 hidden h-14 w-14 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border-4 border-white bg-mayfair-navy text-xs font-bold tracking-widest text-mayfair-teal shadow-xl lg:flex dark:border-slate-950">
       VS
     </div>
-    <div class="rounded-[2rem] border border-red-100 bg-red-50/50 p-8 dark:border-red-900/40 dark:bg-red-950/10">
+    <div appReveal class="rounded-[2rem] border border-red-100 bg-red-50/50 p-8 dark:border-red-900/40 dark:bg-red-950/10">
       <div class="mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-red-100 text-lg text-red-400 dark:bg-red-900/30">
         <i class="fas fa-house-chimney-crack"></i>
       </div>
@@ -65,7 +70,7 @@
       <p class="mt-6 text-xs font-bold text-red-400">{{ 'concept_rent_impact' | translate }}</p>
     </div>
 
-    <div class="rounded-[2rem] border-2 border-mayfair-teal bg-mayfair-navy p-8 text-white">
+    <div appReveal [revealDelay]="CARD_STAGGER_MS" class="rounded-[2rem] border-2 border-mayfair-teal bg-mayfair-navy p-8 text-white">
       <div class="mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-mayfair-teal/20 text-lg text-mayfair-teal">
         <i class="fas fa-key"></i>
       </div>
@@ -198,6 +203,8 @@
   </div>
 </section>
 
+<app-section-divider />
+
 <section id="products" class="mx-auto max-w-7xl px-6 py-24" appReveal>
   <div class="mx-auto mb-16 max-w-2xl text-center">
     <span class="rounded-full bg-mayfair-teal/10 px-3 py-1 text-sm font-bold tracking-widest text-mayfair-teal uppercase">{{ 'products_section_badge' | translate }}</span>
@@ -278,6 +285,8 @@
     </div>
   </div>
 </section>
+
+<app-section-divider />
 
 <section id="roadmap" class="mx-auto max-w-7xl px-6 py-24" appReveal>
   <div class="mx-auto mb-16 max-w-2xl text-center">
