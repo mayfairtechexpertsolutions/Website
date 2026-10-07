@@ -86,3 +86,59 @@ h3,
 .animate-fade-in {
   animation: fade-in 0.25s ease-out;
 }
+
+/* Hero headline: white-to-grey gradient; highlighted <span>s keep their own colour */
+.text-gradient-hero {
+  background: linear-gradient(180deg, #fff 30%, #94a3b8 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.text-gradient-hero span {
+  -webkit-text-fill-color: currentColor;
+}
+
+/* Soft pulsing glow on primary CTAs */
+@keyframes btn-glow-pulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgb(32 178 170 / 0.45);
+  }
+  50% {
+    box-shadow: 0 0 24px 4px rgb(32 178 170 / 0.35);
+  }
+}
+.btn-glow {
+  animation: btn-glow-pulse 3s ease-in-out infinite;
+}
+
+/* Hero globe: teal halo + tilt toward the pointer (--px/--py set by appPointerParallax) */
+.globe-glow {
+  background: radial-gradient(circle, rgb(32 178 170 / 0.28) 0%, transparent 65%);
+  filter: blur(24px);
+}
+.globe-tilt {
+  transform: perspective(900px) rotateY(calc(var(--px, 0) * 10deg)) rotateX(calc(var(--py, 0) * -10deg));
+  transition: transform 0.25s ease-out;
+}
+
+/* Section divider diamond glow */
+.divider-diamond {
+  box-shadow: 0 0 10px rgb(32 178 170 / 0.6);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+  .btn-glow,
+  .globe-pulse-1,
+  .globe-pulse-2 {
+    animation: none;
+  }
+  .globe-tilt {
+    transform: none;
+  }
+}
