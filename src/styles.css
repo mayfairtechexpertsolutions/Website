@@ -1,0 +1,88 @@
+@import "tailwindcss";
+
+@theme {
+  --color-mayfair-navy: #003b5c;
+  --color-mayfair-teal: #20b2aa;
+  --color-mayfair-dark: #002236;
+  --font-serif: "Playfair Display", serif;
+  --font-sans: "Inter", sans-serif;
+}
+
+html {
+  scroll-behavior: smooth;
+  color-scheme: light dark;
+}
+
+body {
+  font-family: var(--font-sans);
+}
+
+h1,
+h2,
+h3,
+.font-serif {
+  font-family: var(--font-serif);
+}
+
+.gradient-bg {
+  background: linear-gradient(135deg, #003b5c 0%, #002236 100%);
+}
+
+/* Scroll-reveal: elements fade/slide in once appReveal marks them .active */
+.reveal {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: all 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.reveal.active {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Mobile menu slide state */
+.menu-closed {
+  transform: translateX(100%);
+}
+.menu-open {
+  transform: translateX(0);
+}
+
+/* Globe hub pulse rings */
+@keyframes globe-pulse {
+  0%,
+  100% {
+    opacity: 0.4;
+  }
+  50% {
+    opacity: 0.08;
+  }
+}
+.globe-pulse-1 {
+  animation: globe-pulse 3s ease-in-out infinite;
+}
+.globe-pulse-2 {
+  animation: globe-pulse 3s ease-in-out infinite 1.5s;
+}
+
+/* Sticky mobile CTA bar slide state */
+.mobile-cta-visible {
+  transform: translateY(0);
+}
+.mobile-cta-hidden {
+  transform: translateY(100%);
+}
+
+/* FAQ answer reveal */
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.animate-fade-in {
+  animation: fade-in 0.25s ease-out;
+}

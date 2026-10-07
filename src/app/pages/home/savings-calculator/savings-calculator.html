@@ -1,0 +1,63 @@
+<div class="gradient-bg rounded-[2.5rem] p-8 md:p-14">
+  <div class="mx-auto mb-12 max-w-2xl text-center">
+    <span class="rounded-full bg-mayfair-teal/10 px-3 py-1 text-sm font-bold tracking-widest text-mayfair-teal uppercase">
+      {{ 'calc_badge' | translate }}
+    </span>
+    <h2 class="mt-6 mb-4 font-serif text-3xl font-bold text-white md:text-4xl" [innerHTML]="'calc_main_title' | translate"></h2>
+    <p class="text-lg text-slate-300">{{ 'calc_subtitle' | translate }}</p>
+  </div>
+
+  <div class="mx-auto mb-10 max-w-md">
+    <label class="mb-3 block text-center text-sm font-semibold text-slate-300">{{ 'calc_label' | translate }}</label>
+    <div class="flex items-center gap-4 rounded-2xl border border-white/10 bg-white/5 p-4">
+      <input
+        type="range"
+        min="1"
+        max="200"
+        [ngModel]="staffCount()"
+        (ngModelChange)="onStaffCountChange($event)"
+        aria-label="Staff count"
+        class="h-2 flex-1 accent-mayfair-teal"
+      />
+      <span class="w-20 shrink-0 text-right font-serif text-xl font-bold text-mayfair-teal">{{ staffCount() }}</span>
+      <span class="text-xs text-slate-400">{{ 'calc_users' | translate }}</span>
+    </div>
+    <p class="mt-3 text-center text-[11px] text-slate-400">{{ 'calc_assumption' | translate }}</p>
+  </div>
+
+  <div class="grid grid-cols-1 gap-8 md:grid-cols-2">
+    <div class="rounded-3xl border border-white/10 bg-white/5 p-8">
+      <h3 class="mb-2 font-serif text-xl font-bold text-white">{{ 'calc_rent_title' | translate }}</h3>
+      <p class="mb-4 text-sm text-slate-400">{{ 'calc_rent_desc' | translate }}</p>
+      <div class="mb-6 font-serif text-4xl font-bold text-red-300">{{ formattedTotal() }}</div>
+      <ul class="space-y-2 text-sm text-slate-300">
+        <li class="flex items-center gap-2"><i class="fas fa-xmark text-red-400"></i>{{ 'calc_rent_li1' | translate }}</li>
+        <li class="flex items-center gap-2"><i class="fas fa-xmark text-red-400"></i>{{ 'calc_rent_li2' | translate }}</li>
+        <li class="flex items-center gap-2"><i class="fas fa-xmark text-red-400"></i>{{ 'calc_rent_li3' | translate }}</li>
+      </ul>
+    </div>
+
+    <div class="rounded-3xl border-2 border-mayfair-teal bg-mayfair-teal/5 p-8">
+      <h3 class="mb-2 font-serif text-xl font-bold text-white">{{ 'calc_own_title' | translate }}</h3>
+      <p class="mb-4 text-sm text-slate-400">{{ 'calc_own_desc' | translate }}</p>
+      <div class="mb-6 font-serif text-4xl font-bold text-mayfair-teal">{{ 'calc_equity' | translate }}</div>
+      <ul class="space-y-2 text-sm text-slate-300">
+        <li class="flex items-center gap-2"><i class="fas fa-check text-mayfair-teal"></i>{{ 'calc_own_li1' | translate }}</li>
+        <li class="flex items-center gap-2"><i class="fas fa-check text-mayfair-teal"></i>{{ 'calc_own_li2' | translate }}</li>
+        <li class="flex items-center gap-2"><i class="fas fa-check text-mayfair-teal"></i>{{ 'calc_own_li3' | translate }}</li>
+      </ul>
+    </div>
+  </div>
+
+  <p class="mt-8 text-center text-xs text-slate-400" [innerHTML]="'calc_logic' | translate"></p>
+
+  <div class="mt-10 text-center">
+    <a
+      routerLink="/"
+      fragment="contact"
+      class="inline-block rounded-xl bg-mayfair-teal px-10 py-4 text-lg font-bold text-white shadow-xl transition-all hover:bg-white hover:text-mayfair-navy"
+    >
+      {{ formattedTotal() }} — {{ 'calc_cta' | translate }}
+    </a>
+  </div>
+</div>

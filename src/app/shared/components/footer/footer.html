@@ -1,0 +1,56 @@
+<footer class="border-t border-mayfair-teal/20 bg-mayfair-navy px-6 py-16">
+  <div class="mx-auto max-w-7xl">
+    <div class="mb-12 grid gap-12 md:grid-cols-4">
+      <div class="md:col-span-2">
+        <a routerLink="/" class="mb-6 flex items-center gap-2">
+          <img src="/media/only_logo.png" alt="MayfairTech Logo" class="h-20 w-auto" />
+          <span class="text-xl font-bold tracking-tighter text-white uppercase">MayfairTech Expert Solutions</span>
+        </a>
+        <p class="mb-6 max-w-sm text-sm leading-relaxed text-slate-400">
+          {{ 'footer_desc' | translate }}
+        </p>
+        <div class="flex gap-4">
+          <a
+            href="mailto:mayfairtechexpertsolutions@gmail.com"
+            class="flex h-10 w-10 items-center justify-center rounded-full bg-white/5 text-mayfair-teal transition-all hover:bg-mayfair-teal hover:text-white"
+          >
+            <i class="fas fa-envelope"></i>
+          </a>
+          <a
+            href="https://www.linkedin.com/company/mayfairtech-solutions/?viewAsMember=true"
+            class="flex h-10 w-10 items-center justify-center rounded-full bg-white/5 text-mayfair-teal transition-all hover:bg-mayfair-teal hover:text-white"
+          >
+            <i class="fab fa-linkedin-in"></i>
+          </a>
+        </div>
+      </div>
+
+      <div>
+        <h4 class="mb-6 text-sm font-bold tracking-widest text-white uppercase">{{ 'footer_col1_title' | translate }}</h4>
+        <ul class="space-y-4 text-sm">
+          <li><a routerLink="/" fragment="about" class="text-slate-400 transition hover:text-mayfair-teal">{{ 'footer_link1' | translate }}</a></li>
+          <li><a routerLink="/" fragment="careers" class="text-slate-400 transition hover:text-mayfair-teal">{{ 'footer_link2' | translate }}</a></li>
+          <li><a routerLink="/privacy.html" class="text-slate-400 transition hover:text-mayfair-teal">{{ 'footer_link3' | translate }}</a></li>
+          <li><a routerLink="/terms.html" class="text-slate-400 transition hover:text-mayfair-teal">{{ 'footer_link4' | translate }}</a></li>
+        </ul>
+        <ul class="mt-4 space-y-4 text-sm">
+          @for (p of products; track p.slug) {
+            <li><a [routerLink]="p.href" class="text-slate-400 transition hover:text-mayfair-teal">{{ p.nameKey | translate }}</a></li>
+          }
+          <li><a routerLink="/products.html" class="font-semibold text-mayfair-teal transition hover:text-white">{{ 'products_view_all' | translate }}</a></li>
+        </ul>
+      </div>
+
+      <div>
+        <h4 class="mb-6 text-sm font-bold tracking-widest text-white uppercase">{{ 'footer_col2_title' | translate }}</h4>
+        <p class="mb-2 text-sm leading-relaxed text-slate-400">{{ 'footer_address' | translate }}</p>
+        <p class="text-xs text-slate-400 italic">{{ 'footer_governance_note' | translate }}</p>
+      </div>
+    </div>
+
+    <div class="flex flex-col items-center justify-between gap-4 border-t border-white/5 pt-8 md:flex-row">
+      <p class="text-[10px] tracking-[0.4em] text-slate-500 uppercase">{{ 'footer_legal1' | translate }}</p>
+      <p class="text-[10px] tracking-widest text-slate-500 uppercase">{{ 'footer_legal2' | translate }}</p>
+    </div>
+  </div>
+</footer>

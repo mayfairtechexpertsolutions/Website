@@ -1,0 +1,37 @@
+<div class="flex items-center justify-between">
+  <a routerLink="/" (click)="close()" class="flex items-center gap-3">
+    <img src="/media/only_logo.png" class="h-11 w-auto" alt="MayfairTech Logo" />
+    <span class="flex flex-col leading-tight">
+      <span class="font-serif text-base font-bold text-mayfair-navy dark:text-white">MayfairTech</span>
+      <span class="text-[10px] font-semibold tracking-wide text-mayfair-teal uppercase">Expert Solutions</span>
+    </span>
+  </a>
+  <button type="button" (click)="close()" class="text-5xl text-mayfair-navy focus:outline-none dark:text-slate-100" aria-label="Close navigation menu">
+    &times;
+  </button>
+</div>
+
+<div class="flex flex-col space-y-6 font-serif text-2xl text-mayfair-navy dark:text-slate-100">
+  @for (link of links(); track link.path + (link.fragment ?? '')) {
+    <a [routerLink]="link.path" [fragment]="link.fragment" (click)="close()">{{ link.labelKey | translate }}</a>
+  }
+</div>
+
+<hr class="border-slate-100 dark:border-slate-800" />
+
+<div>
+  <p class="mb-4 text-xs font-bold tracking-widest text-slate-400 uppercase">{{ 'nav_products' | translate }}</p>
+  <div class="flex flex-col space-y-4 font-serif text-xl text-mayfair-navy dark:text-slate-100">
+    @for (p of products; track p.slug) {
+      <a [routerLink]="p.href" (click)="close()">{{ p.nameKey | translate }}</a>
+    }
+    <a routerLink="/products.html" (click)="close()" class="font-bold text-mayfair-teal">{{ 'products_view_all' | translate }}</a>
+  </div>
+</div>
+
+<hr class="border-slate-100 dark:border-slate-800" />
+
+<div class="space-y-4">
+  <p class="text-xs font-bold tracking-widest text-slate-400 uppercase">{{ 'select_language' | translate }}</p>
+  <app-language-switcher variant="grid" />
+</div>
