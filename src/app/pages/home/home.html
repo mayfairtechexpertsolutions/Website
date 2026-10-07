@@ -106,7 +106,7 @@
     <p class="text-lg text-slate-600 dark:text-slate-300">{{ 'billing_subtitle' | translate }}</p>
   </div>
   <div class="grid grid-cols-1 gap-8 lg:grid-cols-3">
-    <div class="rounded-2xl border border-slate-200 bg-white p-8 transition hover:-translate-y-1 hover:shadow-xl dark:border-slate-700 dark:bg-slate-900">
+    <div class="rounded-2xl border border-slate-200 bg-white p-8 card-hover dark:border-slate-700 dark:bg-slate-900">
       <div class="mb-4 flex items-center justify-between">
         <div class="font-serif text-3xl font-bold text-mayfair-teal/30">01.</div>
         <div class="flex h-11 w-11 items-center justify-center rounded-xl bg-mayfair-teal/10 text-lg text-mayfair-teal">
@@ -120,7 +120,7 @@
         <li>{{ 'bill1_li2' | translate }}</li>
       </ul>
     </div>
-    <div class="rounded-2xl border border-slate-200 bg-white p-8 transition hover:-translate-y-1 hover:shadow-xl dark:border-slate-700 dark:bg-slate-900">
+    <div class="rounded-2xl border border-slate-200 bg-white p-8 card-hover dark:border-slate-700 dark:bg-slate-900">
       <div class="mb-4 flex items-center justify-between">
         <div class="font-serif text-3xl font-bold text-mayfair-teal/30">02.</div>
         <div class="flex h-11 w-11 items-center justify-center rounded-xl bg-mayfair-teal/10 text-lg text-mayfair-teal">
@@ -134,7 +134,7 @@
         <li>{{ 'bill2_li2' | translate }}</li>
       </ul>
     </div>
-    <div class="rounded-2xl border border-slate-200 bg-white p-8 transition hover:-translate-y-1 hover:shadow-xl dark:border-slate-700 dark:bg-slate-900">
+    <div class="rounded-2xl border border-slate-200 bg-white p-8 card-hover dark:border-slate-700 dark:bg-slate-900">
       <div class="mb-4 flex items-center justify-between">
         <div class="font-serif text-3xl font-bold text-mayfair-teal/30">03.</div>
         <div class="flex h-11 w-11 items-center justify-center rounded-xl bg-mayfair-teal/10 text-lg text-mayfair-teal">
@@ -160,7 +160,7 @@
       <p class="text-lg text-slate-600 dark:text-slate-300">{{ 'models_subtitle' | translate }}</p>
     </div>
     <div class="grid grid-cols-1 gap-8 lg:grid-cols-3">
-      <div class="rounded-[2rem] border border-slate-200 bg-white p-8 transition hover:-translate-y-1 hover:shadow-xl dark:border-slate-700 dark:bg-slate-900">
+      <div class="rounded-[2rem] border border-slate-200 bg-white p-8 card-hover dark:border-slate-700 dark:bg-slate-900">
         <div class="mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-mayfair-navy text-lg text-mayfair-teal">
           <i class="fas fa-user-shield"></i>
         </div>
@@ -173,7 +173,7 @@
           <li class="flex items-center gap-2"><i class="fas fa-check text-mayfair-teal"></i>{{ 'model1_li3' | translate }}</li>
         </ul>
       </div>
-      <div class="rounded-[2rem] border border-slate-200 bg-white p-8 transition hover:-translate-y-1 hover:shadow-xl dark:border-slate-700 dark:bg-slate-900">
+      <div class="rounded-[2rem] border border-slate-200 bg-white p-8 card-hover dark:border-slate-700 dark:bg-slate-900">
         <div class="mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-mayfair-navy text-lg text-mayfair-teal">
           <i class="fas fa-users-rectangle"></i>
         </div>
@@ -186,7 +186,7 @@
           <li class="flex items-center gap-2"><i class="fas fa-check text-mayfair-teal"></i>{{ 'model2_li3' | translate }}</li>
         </ul>
       </div>
-      <div class="rounded-[2rem] border border-slate-200 bg-white p-8 transition hover:-translate-y-1 hover:shadow-xl dark:border-slate-700 dark:bg-slate-900">
+      <div class="rounded-[2rem] border border-slate-200 bg-white p-8 card-hover dark:border-slate-700 dark:bg-slate-900">
         <div class="mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-mayfair-navy text-lg text-mayfair-teal">
           <i class="fas fa-flag-checkered"></i>
         </div>
@@ -284,6 +284,17 @@
       <p class="mt-8 border-t border-white/10 pt-6 text-sm text-slate-400 italic">{{ 'materials_footer' | translate }}</p>
     </div>
   </div>
+</section>
+
+<section id="impact" class="mx-auto max-w-7xl px-6 py-24" appReveal>
+  <div class="mx-auto mb-16 max-w-2xl text-center">
+    <span class="rounded-full bg-mayfair-teal/10 px-3 py-1 text-sm font-bold tracking-widest text-mayfair-teal uppercase">{{ 'stats_badge' | translate }}</span>
+    <h2 class="mt-6 font-serif text-3xl font-bold text-mayfair-navy md:text-4xl dark:text-white" [innerHTML]="'stats_title' | translate"></h2>
+  </div>
+  <app-stats-tickets [stats]="stats" />
+  <p class="mt-12 text-center text-sm font-semibold text-slate-600 dark:text-slate-300">
+    <i class="fas fa-scale-balanced mr-2 text-mayfair-teal"></i>{{ 'stats_footer' | translate }}
+  </p>
 </section>
 
 <app-section-divider />

@@ -138,7 +138,45 @@ h3,
   .globe-pulse-2 {
     animation: none;
   }
-  .globe-tilt {
+  .globe-tilt,
+  .card-hover:hover {
     transform: none;
+  }
+}
+
+/* Card hover: lift, teal border and soft glow */
+.card-hover {
+  transition:
+    transform 0.4s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.4s,
+    border-color 0.4s;
+}
+.card-hover:hover {
+  transform: translateY(-6px);
+  border-color: var(--color-mayfair-teal);
+  box-shadow: 0 20px 40px -12px rgb(32 178 170 / 0.35);
+}
+
+/* Stats ticket notches on the left/right edges */
+.ticket::before,
+.ticket::after {
+  content: '';
+  position: absolute;
+  top: 55%;
+  width: 20px;
+  height: 20px;
+  border-radius: 9999px;
+  background: var(--color-slate-50);
+}
+.ticket::before {
+  left: -10px;
+}
+.ticket::after {
+  right: -10px;
+}
+@media (prefers-color-scheme: dark) {
+  .ticket::before,
+  .ticket::after {
+    background: var(--color-mayfair-dark);
   }
 }

@@ -6,6 +6,8 @@ import { ProductsGridComponent } from '../../shared/components/products-grid/pro
 import { GlobeComponent } from '../../shared/components/globe/globe';
 import { SectionDividerComponent } from '../../shared/components/section-divider/section-divider';
 import { PointerParallaxDirective } from '../../shared/directives/pointer-parallax.directive';
+import { STATS } from '../../core/stats/stats.data';
+import { StatsTicketsComponent } from '../../shared/components/stats-tickets/stats-tickets';
 import { MobileCtaBarComponent } from '../../shared/components/mobile-cta-bar/mobile-cta-bar';
 import { SavingsCalculatorComponent } from './savings-calculator/savings-calculator';
 import { ContactFormComponent } from './contact-form/contact-form';
@@ -23,6 +25,7 @@ import { SeoService } from '../../core/seo/seo.service';
     MobileCtaBarComponent,
     SavingsCalculatorComponent,
     SectionDividerComponent,
+    StatsTicketsComponent,
     PointerParallaxDirective,
     ContactFormComponent,
   ],
@@ -30,6 +33,7 @@ import { SeoService } from '../../core/seo/seo.service';
 })
 export class HomeComponent {
   protected readonly CARD_STAGGER_MS = 150;
+  protected readonly stats = STATS;
 
   constructor() {
     inject(SeoService).set({
