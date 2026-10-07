@@ -1,0 +1,15 @@
+<div class="grid grid-cols-1 gap-8 sm:grid-cols-3">
+  @for (stat of stats(); track stat.labelKey; let i = $index) {
+    <div appReveal [revealDelay]="i * staggerMs">
+      <div
+        class="ticket relative flex h-full flex-col justify-between rounded-3xl p-8 shadow-xl transition-transform duration-500 hover:rotate-0 hover:-translate-y-2"
+        [class]="ticketStyle(i)"
+      >
+        <p class="mb-10 font-serif text-xl leading-snug font-bold">{{ stat.labelKey | translate }}</p>
+        <p class="border-t border-dashed border-current/30 pt-6 font-serif text-6xl font-bold">
+          <span [appCountUp]="stat.value">{{ stat.value }}</span>{{ stat.suffix }}
+        </p>
+      </div>
+    </div>
+  }
+</div>
