@@ -20,7 +20,7 @@ import { Product } from '../../../core/products/product.model';
           >
         }
         <div
-          class="mb-6 flex h-14 w-14 items-center justify-center rounded-2xl bg-slate-100 text-mayfair-teal transition-all duration-500 group-hover:rotate-3 group-hover:bg-mayfair-teal group-hover:text-white dark:bg-white/5"
+          class="mb-6 flex h-14 w-14 items-center justify-center rounded-2xl bg-slate-100 text-mayfair-teal transition-all duration-500 group-hover:rotate-3 group-hover:bg-mayfair-teal group-hover:text-mayfair-navy dark:bg-white/5"
         >
           <i class="fas text-xl" [class]="product().icon"></i>
         </div>
@@ -40,7 +40,7 @@ import { Product } from '../../../core/products/product.model';
         </ul>
         <a
           [routerLink]="product().href"
-          class="mt-auto inline-block rounded-xl bg-slate-100 py-3 text-center font-bold text-mayfair-navy transition-all group-hover:bg-mayfair-teal group-hover:text-white dark:bg-white/10 dark:text-white"
+          class="mt-auto inline-block rounded-xl bg-slate-100 py-3 text-center font-bold text-mayfair-navy transition-all group-hover:bg-mayfair-teal group-hover:text-mayfair-navy dark:bg-white/10 dark:text-white"
         >
           {{ ctaLabel() }}
         </a>

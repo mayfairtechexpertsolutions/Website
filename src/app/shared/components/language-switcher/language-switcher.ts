@@ -25,12 +25,10 @@ const LANG_OPTIONS: LangOption[] = [
           <button
             type="button"
             (click)="select(opt.value)"
-            class="rounded-xl border p-4 text-sm font-bold transition-all"
+            class="rounded-xl border p-4 text-sm font-bold text-mayfair-navy transition-all"
             [class.bg-mayfair-teal]="i18n.currentLang() === opt.value"
-            [class.text-white]="i18n.currentLang() === opt.value"
             [class.border-mayfair-teal]="i18n.currentLang() === opt.value"
             [class.border-slate-200]="i18n.currentLang() !== opt.value"
-            [class.text-mayfair-navy]="i18n.currentLang() !== opt.value"
             [class.dark:border-slate-700]="i18n.currentLang() !== opt.value"
             [class.dark:text-slate-200]="i18n.currentLang() !== opt.value"
           >

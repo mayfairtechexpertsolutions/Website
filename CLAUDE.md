@@ -74,13 +74,17 @@ All internal links use `routerLink="/products.html"` etc. (matching the literal 
 
 ## Brand Colors
 
-Defined as Tailwind v4 theme tokens in `src/styles.css`'s `@theme` block — use the utility classes below, not raw hex/arbitrary values:
+Defined as Tailwind v4 theme tokens in `src/styles.css`'s `@theme` block — use the utility classes below, not raw hex/arbitrary values (never `text-[#20B2AA]` — it bypasses the contrast-aware remap). The remap is ancestor-based, so a light card nested inside a navy section needs an explicit `text-mayfair-teal-ink`:
 
 | Utility class | Hex | Usage |
 |-------|-----|-------|
 | `bg-mayfair-navy` / `text-mayfair-navy` | `#003B5C` | Primary dark blue; backgrounds, headings |
 | `bg-mayfair-teal` / `text-mayfair-teal` | `#20B2AA` | Accent; CTAs, highlights |
 | `bg-mayfair-dark` | `#002236` | Darker navy; gradient ends, cards |
+| `text-mayfair-teal-ink` | `#0F766E` | Teal for text on light backgrounds (WCAG AA); `text-mayfair-teal` is remapped to this automatically on light backgrounds |
+| `text-mayfair-teal-light` | `#34D3C9` | Teal for text on dark backgrounds; `text-mayfair-teal` resolves to this inside `.bg-mayfair-navy`/`.bg-mayfair-dark`/`.gradient-bg` and in OS dark mode |
+
+**Text on bright teal backgrounds is always `text-mayfair-navy`, never white** (white on `#20B2AA` is 2.6:1; navy is 4.5:1) — this includes hover states that turn a button teal.
 
 Fonts: `font-serif` = Playfair Display, `font-sans` = Inter (both registered as `--font-serif`/`--font-sans` in the same `@theme` block).
 
@@ -157,6 +161,7 @@ export const PRODUCTS: Product[] = [
 - **`ContactFormComponent`** (home) / inline trial form in `ErpComponent`: Angular reactive forms (`FormBuilder`). On submit, builds a plain-text summary of the answers and opens `https://wa.me/<MayfairTech WhatsApp Business number>?text=<encoded summary>` in a new tab — the visitor still has to hit Send inside WhatsApp, since there is no backend to deliver it silently. Tracks `idle | success | error` in a signal (`success` means the link opened, not that the visitor sent it), swaps in a success card via `@if`.
 - **Motion/effects (Phase 1)**: `ScrollStateService` (`core/services/`) exposes a `scrolled` signal — the navbar shrinks and gains a stronger shadow when it's true. `PointerParallaxDirective` (`appPointerParallax`, on the home hero) writes `--px`/`--py` (-1..1) CSS vars; `.globe-tilt` in `styles.css` turns them into a 3D tilt on the globe, with a `.globe-glow` halo behind it. `SectionDividerComponent` (`<app-section-divider />`) is the glowing line + diamond between sections. `.text-gradient-hero` (hero headline gradient) and `.btn-glow` (pulsing CTA) are plain CSS classes. `appReveal` accepts `[revealDelay]` (ms) to stagger sibling cards. Everything honours `prefers-reduced-motion` (CSS media query, and the directive skips its listener).
 - **Motion/effects (Phase 2)**: the home `#impact` section renders `StatsTicketsComponent` from the `STATS` registry (`core/stats/stats.data.ts`) — to change the figures, edit that array and the `stats_*_label` keys (all 4 languages). `CountUpDirective` (`[appCountUp]`) counts a number up when it scrolls into view; prerendered HTML and reduced-motion visitors keep the final value. `.card-hover` (lift + teal border/glow) is the shared hover style for the "Our Models" cards.
+- **`ModelsAccordionComponent`** (`<app-models-accordion>`): the home `#models` section. Driven by `ENGAGEMENT_MODELS` (`core/models/engagement-models.data.ts`, keys `model<N>_*`); one panel open at a time (click, keyboard focus or hover), horizontal at `lg`, stacked below. Buttons carry `aria-expanded`/`aria-controls`.
 - **`RevealDirective`** (`appReveal`): replaces the old `.reveal` class + manual `IntersectionObserver` — a single shared observer lives in `RevealObserverService` (`providedIn: 'root'`), and the directive registers/unregisters its host element in `ngOnInit`/`ngOnDestroy`.
 
 ---
