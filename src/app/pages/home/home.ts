@@ -4,6 +4,7 @@ import { RevealDirective } from '../../shared/directives/reveal.directive';
 import { TranslatePipe } from '../../core/i18n/translate.pipe';
 import { ProductsGridComponent } from '../../shared/components/products-grid/products-grid';
 import { GlobeComponent } from '../../shared/components/globe/globe';
+import { StarfieldComponent } from '../../shared/components/starfield/starfield';
 import { SectionDividerComponent } from '../../shared/components/section-divider/section-divider';
 import { PointerParallaxDirective } from '../../shared/directives/pointer-parallax.directive';
 import { ENGAGEMENT_MODELS } from '../../core/models/engagement-models.data';
@@ -24,6 +25,7 @@ import { SeoService } from '../../core/seo/seo.service';
     TranslatePipe,
     ProductsGridComponent,
     GlobeComponent,
+    StarfieldComponent,
     MobileCtaBarComponent,
     SavingsCalculatorComponent,
     SectionDividerComponent,

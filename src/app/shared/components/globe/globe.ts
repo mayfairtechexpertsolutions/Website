@@ -1,216 +1,267 @@
 import { PLATFORM_ID, ChangeDetectionStrategy, Component, ElementRef, OnDestroy, AfterViewInit, ViewChild, inject } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
+import { TranslationService } from '../../../core/i18n/translation.service';
+import {
+  AUTO_SPIN_SPEED,
+  CENTER_X,
+  CENTER_Y,
+  DRAG_THRESHOLD_PX,
+  FOCUS_SPIN_FACTOR,
+  MAX_FRAME_SECONDS,
+  PALETTE,
+  SPHERE_RADIUS,
+  VIEWBOX_SIZE,
+} from './globe.data';
+import { clampSpinSpeed, dragToAngle, easeSpinSpeed } from './globe.math';
+import { GlobeRenderer, NODE_GLOW_FILTER_ID, NODE_INDEX_ATTRIBUTE, NO_NODE_FOCUSED } from './globe.renderer';
 
-const NS = 'http://www.w3.org/2000/svg';
-const CX = 260;
-const CY = 260;
-const R = 210;
-const ROTATION_SPEED = 0.18; // radians per second (frame-rate independent)
-const LAT_SINS = [-0.7, -0.4, -0.1, 0.1, 0.4, 0.7];
-const MERIDIAN_LONS = [0, Math.PI / 6, Math.PI / 3, Math.PI / 2, (2 * Math.PI) / 3, (5 * Math.PI) / 6];
-// [longitude, latitude] in radians for each talent node; index 5 is the hub.
-const NODES: [number, number][] = [
-  [0.0, 1.4],
-  [1.15, 0.42],
-  [1.02, -0.55],
-  [-1.1, -0.57],
-  [-1.12, 0.45],
-  [0.24, 0.14],
-  [-0.52, -0.24],
-  [0.75, 0.62],
-];
-const NODE_RADII = [6, 5, 6, 5, 6, 8, 5, 4];
-const HUB = 5;
-const EDGES: [number, number][] = [
-  [0, 1],
-  [1, 2],
-  [2, 3],
-  [3, 4],
-  [4, 0],
-  [HUB, 1],
-  [HUB, 2],
-  [HUB, 4],
-  [HUB, 6],
-  [HUB, 7],
-  [6, 3],
-  [7, 0],
-];
+const SPHERE_FILL_ID = 'globe-sphere-fill';
+/** Milliseconds a pointer may rest before releasing without flinging the globe. */
+const FLING_MAX_IDLE_MS = 100;
+const FLING_SMOOTHING = 0.5;
 
-function mkEl(tag: string, attrs: Record<string, string | number>): SVGElement {
-  const e = document.createElementNS(NS, tag);
-  for (const [k, v] of Object.entries(attrs)) e.setAttribute(k, String(v));
-  return e as SVGElement;
-}
-
-function smoothstep(edge0: number, edge1: number, x: number): number {
-  const t = Math.max(0, Math.min(1, (x - edge0) / (edge1 - edge0)));
-  return t * t * (3 - 2 * t);
+interface Press {
+  readonly pointerId: number;
+  readonly startX: number;
+  readonly startY: number;
+  readonly pixelsToViewbox: number;
+  lastX: number;
+  lastTime: number;
+  dragging: boolean;
 }
 
 @Component({
   selector: 'app-globe',
   changeDetection: ChangeDetectionStrategy.OnPush,
+  host: { class: 'block size-full' },
   template: `
-    <svg #svg viewBox="0 0 520 520" class="h-full w-full opacity-[0.18]" aria-hidden="true">
-      <circle [attr.cx]="CX" [attr.cy]="CY" [attr.r]="R" fill="none" stroke="#20B2AA" stroke-width="1.2" />
+    <svg #svg viewBox="0 0 520 520" class="h-full w-full cursor-grab touch-pan-y select-none" aria-hidden="true">
+      <defs>
+        <radialGradient [attr.id]="SPHERE_FILL_ID" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" [attr.stop-color]="palette.deep" stop-opacity="0.7" />
+          <stop offset="75%" [attr.stop-color]="palette.deep" stop-opacity="0.35" />
+          <stop offset="100%" [attr.stop-color]="palette.tealLight" stop-opacity="0.28" />
+        </radialGradient>
+        <filter [attr.id]="NODE_GLOW_FILTER_ID" x="-100%" y="-100%" width="300%" height="300%">
+          <feGaussianBlur stdDeviation="3" result="blur" />
+          <feMerge>
+            <feMergeNode in="blur" />
+            <feMergeNode in="SourceGraphic" />
+          </feMerge>
+        </filter>
+      </defs>
+      <circle [attr.cx]="CX" [attr.cy]="CY" [attr.r]="R" [attr.fill]="'url(#' + SPHERE_FILL_ID + ')'" />
+      <circle [attr.cx]="CX" [attr.cy]="CY" [attr.r]="R" fill="none" [attr.stroke]="palette.tealLight" stroke-width="1.6" opacity="0.9" />
       <g #lats></g>
       <g #mers></g>
-      <g #conns></g>
-      <g #nodes></g>
+      <g #conns [attr.filter]="'url(#' + NODE_GLOW_FILTER_ID + ')'"></g>
       <g #pulse></g>
+      <g #nodes [attr.filter]="'url(#' + NODE_GLOW_FILTER_ID + ')'"></g>
+      <g #label class="pointer-events-none"></g>
     </svg>
   `,
 })
 export class GlobeComponent implements AfterViewInit, OnDestroy {
   private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
-  protected readonly CX = CX;
-  protected readonly CY = CY;
-  protected readonly R = R;
+  private readonly i18n = inject(TranslationService);
 
-  @ViewChild('svg') private svgRef!: ElementRef<SVGSVGElement>;
-  @ViewChild('lats') private latsRef!: ElementRef<SVGGElement>;
-  @ViewChild('mers') private mersRef!: ElementRef<SVGGElement>;
-  @ViewChild('conns') private connsRef!: ElementRef<SVGGElement>;
-  @ViewChild('nodes') private nodesRef!: ElementRef<SVGGElement>;
-  @ViewChild('pulse') private pulseRef!: ElementRef<SVGGElement>;
+  protected readonly CX = CENTER_X;
+  protected readonly CY = CENTER_Y;
+  protected readonly R = SPHERE_RADIUS;
+  protected readonly SPHERE_FILL_ID = SPHERE_FILL_ID;
+  protected readonly NODE_GLOW_FILTER_ID = NODE_GLOW_FILTER_ID;
+  protected readonly palette = PALETTE;
 
-  private rafId?: number;
+  @ViewChild('svg', { static: true }) private svgRef!: ElementRef<SVGSVGElement>;
+  @ViewChild('lats', { static: true }) private latsRef!: ElementRef<SVGGElement>;
+  @ViewChild('mers', { static: true }) private mersRef!: ElementRef<SVGGElement>;
+  @ViewChild('conns', { static: true }) private connsRef!: ElementRef<SVGGElement>;
+  @ViewChild('nodes', { static: true }) private nodesRef!: ElementRef<SVGGElement>;
+  @ViewChild('pulse', { static: true }) private pulseRef!: ElementRef<SVGGElement>;
+  @ViewChild('label', { static: true }) private labelRef!: ElementRef<SVGGElement>;
+
+  private renderer?: GlobeRenderer;
+  private angle = 0;
+  private spinSpeed = AUTO_SPIN_SPEED;
+  private hoveredIndex = NO_NODE_FOCUSED;
+  private selectedIndex = NO_NODE_FOCUSED;
+  private press?: Press;
+  private suppressNextClick = false;
+  private reducedMotion = false;
+  private visible = true;
+  private lastFrameTime?: number;
+  private frameId?: number;
   private intersectionObserver?: IntersectionObserver;
+  private removeListeners: (() => void)[] = [];
 
   ngAfterViewInit(): void {
     if (!this.isBrowser) return;
-    this.initGlobe();
+    this.reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    this.renderer = new GlobeRenderer(
+      {
+        latitudes: this.latsRef.nativeElement,
+        meridians: this.mersRef.nativeElement,
+        edges: this.connsRef.nativeElement,
+        nodes: this.nodesRef.nativeElement,
+        pulse: this.pulseRef.nativeElement,
+        label: this.labelRef.nativeElement,
+      },
+      (key) => this.i18n.translate(key),
+    );
+    this.renderer.build();
+    this.paint();
+    this.attachPointerInput();
+    this.startFrameLoop();
   }
 
   ngOnDestroy(): void {
-    if (this.rafId !== undefined) cancelAnimationFrame(this.rafId);
+    this.cancelFrame();
     this.intersectionObserver?.disconnect();
+    this.removeListeners.forEach((remove) => remove());
   }
 
-  private initGlobe(): void {
-    const latsG = this.latsRef.nativeElement;
-    LAT_SINS.forEach((s) => {
-      const c = Math.sqrt(1 - s * s);
-      latsG.appendChild(
-        mkEl('ellipse', {
-          cx: CX,
-          cy: CY - s * R,
-          rx: c * R,
-          ry: c * R * 0.32,
-          fill: 'none',
-          stroke: '#20B2AA',
-          'stroke-width': 0.6,
-        }),
-      );
-    });
+  private get focusIndex(): number {
+    return this.hoveredIndex !== NO_NODE_FOCUSED ? this.hoveredIndex : this.selectedIndex;
+  }
 
-    const mersG = this.mersRef.nativeElement;
-    const merEls = MERIDIAN_LONS.map((lon) => {
-      const e = mkEl('ellipse', { cx: CX, cy: CY, rx: 0, ry: R, fill: 'none', stroke: '#20B2AA', 'stroke-width': 0.6 });
-      mersG.appendChild(e);
-      return { e, lon };
-    });
+  private paint(): void {
+    this.renderer?.render({ angle: this.angle, focusIndex: this.focusIndex });
+  }
 
-    const nodesG = this.nodesRef.nativeElement;
-    const nodeEls = NODES.map((_, i) => {
-      const e = mkEl('circle', { r: NODE_RADII[i], fill: '#20B2AA', opacity: 1 });
-      nodesG.appendChild(e);
-      return e;
-    });
-
-    const connsG = this.connsRef.nativeElement;
-    const connEls = EDGES.map(() => {
-      const e = mkEl('line', { stroke: '#20B2AA', 'stroke-width': 0.9, opacity: 0 });
-      connsG.appendChild(e);
-      return e;
-    });
-
-    const pulseG = this.pulseRef.nativeElement;
-    const p1 = mkEl('circle', { r: 16, fill: 'none', stroke: '#20B2AA', 'stroke-width': 0.8 });
-    const p2 = mkEl('circle', { r: 26, fill: 'none', stroke: '#20B2AA', 'stroke-width': 0.5 });
-    p1.classList.add('globe-pulse-1');
-    p2.classList.add('globe-pulse-2');
-    pulseG.appendChild(p1);
-    pulseG.appendChild(p2);
-
-    const project = (lon: number, lat: number, angle: number) => {
-      const cl = Math.cos(lat);
-      const x = R * cl * Math.sin(lon + angle);
-      const y = R * Math.sin(lat);
-      const z = R * cl * Math.cos(lon + angle);
-      return { sx: CX + x, sy: CY - y, z };
-    };
-
-    const render = (angle: number) => {
-      merEls.forEach(({ e, lon }) => {
-        const a = lon + angle;
-        const front = smoothstep(-0.08, 0.08, Math.cos(a));
-        e.setAttribute('rx', String(R * Math.abs(Math.sin(a))));
-        e.setAttribute('opacity', String(0.18 + 0.67 * front));
-        e.setAttribute('stroke-width', String(0.3 + 0.4 * front));
-      });
-
-      const pts = NODES.map(([lon, lat]) => project(lon, lat, angle));
-
-      nodeEls.forEach((e, i) => {
-        const { sx, sy, z } = pts[i];
-        const depthT = (z / R + 1) / 2;
-        const horizonFade = smoothstep(-R * 0.12, R * 0.12, z);
-        e.setAttribute('cx', String(sx));
-        e.setAttribute('cy', String(sy));
-        e.setAttribute('r', String(NODE_RADII[i] * (0.75 + 0.4 * depthT)));
-        e.setAttribute('opacity', String(horizonFade * (i === HUB ? 1 : 0.9)));
-      });
-
-      const hub = pts[HUB];
-      p1.setAttribute('cx', String(hub.sx));
-      p1.setAttribute('cy', String(hub.sy));
-      p2.setAttribute('cx', String(hub.sx));
-      p2.setAttribute('cy', String(hub.sy));
-
-      EDGES.forEach(([a, b], i) => {
-        const pa = pts[a];
-        const pb = pts[b];
-        const zAvg = (pa.z + pb.z) / 2;
-        connEls[i].setAttribute('x1', String(pa.sx));
-        connEls[i].setAttribute('y1', String(pa.sy));
-        connEls[i].setAttribute('x2', String(pb.sx));
-        connEls[i].setAttribute('y2', String(pb.sy));
-        connEls[i].setAttribute('opacity', String(0.6 * smoothstep(-R * 0.6, -R * 0.3, zAvg)));
-      });
-    };
-
-    render(0);
-
-    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    if (reducedMotion) return;
-
-    let angle = 0;
-    let lastTime: number | undefined;
-    const frame = (time: number) => {
-      if (lastTime !== undefined) {
-        angle += ROTATION_SPEED * ((time - lastTime) / 1000);
-      }
-      lastTime = time;
-      render(angle);
-      this.rafId = requestAnimationFrame(frame);
-    };
-
+  private startFrameLoop(): void {
+    if (this.reducedMotion) return;
     this.intersectionObserver = new IntersectionObserver(
       (entries) => {
-        const visible = entries[0]?.isIntersecting ?? true;
-        if (visible && this.rafId === undefined) {
-          lastTime = undefined;
-          this.rafId = requestAnimationFrame(frame);
-        } else if (!visible && this.rafId !== undefined) {
-          cancelAnimationFrame(this.rafId);
-          this.rafId = undefined;
-        }
+        this.visible = entries[0]?.isIntersecting ?? true;
+        this.lastFrameTime = undefined;
+        if (this.visible) this.requestFrame();
+        else this.cancelFrame();
       },
       { threshold: 0 },
     );
     this.intersectionObserver.observe(this.svgRef.nativeElement);
+    this.requestFrame();
+  }
 
-    this.rafId = requestAnimationFrame(frame);
+  /** Schedules at most one repaint; the loop keeps itself going while the globe is visible and motion is allowed. */
+  private requestFrame(): void {
+    if (this.frameId === undefined) this.frameId = requestAnimationFrame(this.onFrame);
+  }
+
+  private cancelFrame(): void {
+    if (this.frameId !== undefined) cancelAnimationFrame(this.frameId);
+    this.frameId = undefined;
+  }
+
+  private readonly onFrame = (time: number): void => {
+    this.frameId = undefined;
+    const deltaSeconds = this.lastFrameTime === undefined ? 0 : Math.min((time - this.lastFrameTime) / 1000, MAX_FRAME_SECONDS);
+    this.lastFrameTime = time;
+    this.advanceSpin(deltaSeconds);
+    this.paint();
+    if (!this.reducedMotion && this.visible) this.requestFrame();
+  };
+
+  private advanceSpin(deltaSeconds: number): void {
+    if (this.reducedMotion || this.press?.dragging) return;
+    const focusFactor = this.focusIndex === NO_NODE_FOCUSED ? 1 : FOCUS_SPIN_FACTOR;
+    this.spinSpeed = easeSpinSpeed(this.spinSpeed, AUTO_SPIN_SPEED * focusFactor, deltaSeconds);
+    this.angle += this.spinSpeed * deltaSeconds;
+  }
+
+  private attachPointerInput(): void {
+    const svg = this.svgRef.nativeElement;
+    const listen = <K extends keyof SVGElementEventMap>(type: K, handler: (event: SVGElementEventMap[K]) => void) => {
+      svg.addEventListener(type, handler as EventListener);
+      this.removeListeners.push(() => svg.removeEventListener(type, handler as EventListener));
+    };
+
+    listen('pointerdown', (event) => this.onPointerDown(event));
+    listen('pointermove', (event) => this.onPointerMove(event));
+    listen('pointerup', (event) => this.onPointerEnd(event));
+    listen('pointercancel', (event) => this.onPointerEnd(event));
+    listen('pointerover', (event) => this.setHovered(this.nodeIndexOf(event.target)));
+    listen('pointerout', (event) => this.setHovered(NO_NODE_FOCUSED, event));
+    listen('pointerenter', () => svg.classList.add('globe-active'));
+    listen('pointerleave', () => svg.classList.remove('globe-active'));
+    listen('click', (event) => this.onClick(event));
+  }
+
+  private nodeIndexOf(target: EventTarget | null): number {
+    const attribute = (target as Element | null)?.closest?.(`[${NODE_INDEX_ATTRIBUTE}]`)?.getAttribute(NODE_INDEX_ATTRIBUTE);
+    return attribute === null || attribute === undefined ? NO_NODE_FOCUSED : Number(attribute);
+  }
+
+  private setHovered(index: number, leaving?: PointerEvent): void {
+    if (leaving && this.nodeIndexOf(leaving.relatedTarget) !== NO_NODE_FOCUSED) return;
+    if (index === this.hoveredIndex) return;
+    this.hoveredIndex = index;
+    this.requestFrame();
+  }
+
+  private onPointerDown(event: PointerEvent): void {
+    if (event.pointerType === 'mouse' && event.button !== 0) return;
+    const svg = this.svgRef.nativeElement;
+    this.press = {
+      pointerId: event.pointerId,
+      startX: event.clientX,
+      startY: event.clientY,
+      pixelsToViewbox: VIEWBOX_SIZE / svg.getBoundingClientRect().width,
+      lastX: event.clientX,
+      lastTime: event.timeStamp,
+      dragging: false,
+    };
+  }
+
+  private onPointerMove(event: PointerEvent): void {
+    const press = this.press;
+    if (!press || press.pointerId !== event.pointerId) return;
+    if (!press.dragging && Math.hypot(event.clientX - press.startX, event.clientY - press.startY) < DRAG_THRESHOLD_PX) return;
+    if (!press.dragging) this.beginDrag(press);
+
+    const deltaAngle = dragToAngle((event.clientX - press.lastX) * press.pixelsToViewbox);
+    const deltaSeconds = (event.timeStamp - press.lastTime) / 1000;
+    this.angle += deltaAngle;
+    if (deltaSeconds > 0) {
+      this.spinSpeed = clampSpinSpeed(FLING_SMOOTHING * this.spinSpeed + (1 - FLING_SMOOTHING) * (deltaAngle / deltaSeconds));
+    }
+    press.lastX = event.clientX;
+    press.lastTime = event.timeStamp;
+    this.requestFrame();
+  }
+
+  private beginDrag(press: Press): void {
+    press.dragging = true;
+    this.spinSpeed = 0;
+    const svg = this.svgRef.nativeElement;
+    svg.setPointerCapture(press.pointerId);
+    svg.classList.replace('cursor-grab', 'cursor-grabbing');
+  }
+
+  private onPointerEnd(event: PointerEvent): void {
+    const press = this.press;
+    if (!press || press.pointerId !== event.pointerId) return;
+    this.press = undefined;
+    if (!press.dragging) return;
+
+    const svg = this.svgRef.nativeElement;
+    svg.classList.replace('cursor-grabbing', 'cursor-grab');
+    this.suppressNextClick = true;
+    // The click that follows a drag release must not select a node; clear the flag if no click arrives.
+    setTimeout(() => (this.suppressNextClick = false));
+    const restedBeforeRelease = event.timeStamp - press.lastTime > FLING_MAX_IDLE_MS;
+    if (this.reducedMotion || restedBeforeRelease) this.spinSpeed = 0;
+    this.lastFrameTime = undefined;
+    this.requestFrame();
+  }
+
+  private onClick(event: MouseEvent): void {
+    if (this.suppressNextClick) {
+      this.suppressNextClick = false;
+      return;
+    }
+    const clicked = this.nodeIndexOf(event.target);
+    this.selectedIndex = clicked === this.selectedIndex ? NO_NODE_FOCUSED : clicked;
+    this.requestFrame();
   }
 }
