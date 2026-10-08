@@ -11,6 +11,7 @@ const TICKET_STYLES = [
   'bg-mayfair-teal text-mayfair-navy -rotate-2',
   'bg-mayfair-navy text-white rotate-1',
   'bg-mayfair-dark text-white -rotate-1',
+  'border border-slate-200 bg-white text-mayfair-navy rotate-2 dark:border-white/10 dark:bg-slate-800 dark:text-white',
 ];
 
 @Component({

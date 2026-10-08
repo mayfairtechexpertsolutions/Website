@@ -4,6 +4,10 @@
   --color-mayfair-navy: #003b5c;
   --color-mayfair-teal: #20b2aa;
   --color-mayfair-dark: #002236;
+  /* Teal darkened for text on light backgrounds (WCAG AA 4.5:1); the bright teal stays for dark backgrounds. */
+  --color-mayfair-teal-ink: #0f766e;
+  /* Teal lightened for small text on dark backgrounds. */
+  --color-mayfair-teal-light: #34d3c9;
   --font-serif: "Playfair Display", serif;
   --font-sans: "Inter", sans-serif;
 }
@@ -178,5 +182,21 @@ h3,
   .ticket::before,
   .ticket::after {
     background: var(--color-mayfair-dark);
+  }
+}
+
+/* Accessible teal text: darker ink on light backgrounds, lighter teal on dark ones */
+@layer utilities {
+  .text-mayfair-teal {
+    color: var(--color-mayfair-teal-ink);
+  }
+  :is(.bg-mayfair-navy, .bg-mayfair-dark, .gradient-bg) .text-mayfair-teal,
+  :is(.bg-mayfair-navy, .bg-mayfair-dark, .gradient-bg).text-mayfair-teal {
+    color: var(--color-mayfair-teal-light);
+  }
+  @media (prefers-color-scheme: dark) {
+    .text-mayfair-teal {
+      color: var(--color-mayfair-teal-light);
+    }
   }
 }

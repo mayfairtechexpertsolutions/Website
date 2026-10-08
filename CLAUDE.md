@@ -74,13 +74,15 @@ All internal links use `routerLink="/products.html"` etc. (matching the literal 
 
 ## Brand Colors
 
-Defined as Tailwind v4 theme tokens in `src/styles.css`'s `@theme` block — use the utility classes below, not raw hex/arbitrary values:
+Defined as Tailwind v4 theme tokens in `src/styles.css`'s `@theme` block — use the utility classes below, not raw hex/arbitrary values (never `text-[#20B2AA]` — it bypasses the contrast-aware remap). The remap is ancestor-based, so a light card nested inside a navy section needs an explicit `text-mayfair-teal-ink`:
 
 | Utility class | Hex | Usage |
 |-------|-----|-------|
 | `bg-mayfair-navy` / `text-mayfair-navy` | `#003B5C` | Primary dark blue; backgrounds, headings |
 | `bg-mayfair-teal` / `text-mayfair-teal` | `#20B2AA` | Accent; CTAs, highlights |
 | `bg-mayfair-dark` | `#002236` | Darker navy; gradient ends, cards |
+| `text-mayfair-teal-ink` | `#0F766E` | Teal for text on light backgrounds (WCAG AA); `text-mayfair-teal` is remapped to this automatically on light backgrounds |
+| `text-mayfair-teal-light` | `#34D3C9` | Teal for text on dark backgrounds; `text-mayfair-teal` resolves to this inside `.bg-mayfair-navy`/`.bg-mayfair-dark`/`.gradient-bg` and in OS dark mode |
 
 Fonts: `font-serif` = Playfair Display, `font-sans` = Inter (both registered as `--font-serif`/`--font-sans` in the same `@theme` block).
 
