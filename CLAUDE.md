@@ -84,6 +84,8 @@ Defined as Tailwind v4 theme tokens in `src/styles.css`'s `@theme` block — use
 | `text-mayfair-teal-ink` | `#0F766E` | Teal for text on light backgrounds (WCAG AA); `text-mayfair-teal` is remapped to this automatically on light backgrounds |
 | `text-mayfair-teal-light` | `#34D3C9` | Teal for text on dark backgrounds; `text-mayfair-teal` resolves to this inside `.bg-mayfair-navy`/`.bg-mayfair-dark`/`.gradient-bg` and in OS dark mode |
 
+**Text on bright teal backgrounds is always `text-mayfair-navy`, never white** (white on `#20B2AA` is 2.6:1; navy is 4.5:1) — this includes hover states that turn a button teal.
+
 Fonts: `font-serif` = Playfair Display, `font-sans` = Inter (both registered as `--font-serif`/`--font-sans` in the same `@theme` block).
 
 ---
