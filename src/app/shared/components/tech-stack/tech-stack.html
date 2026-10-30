@@ -1,0 +1,172 @@
+<!-- 3D stage, shared by both layouts. Decorative: the step rail / accordion are the accessible controls. -->
+<ng-template #stage let-scroll="scroll">
+  <div appPointerParallax class="stack-stage gradient-bg relative overflow-hidden rounded-[2.5rem] select-none" [class]="scroll ? 'h-full' : 'h-[22rem]'">
+    <div class="hero-dots absolute inset-0 opacity-10" aria-hidden="true"></div>
+    <div class="globe-glow pointer-events-none absolute inset-[15%] rounded-full" aria-hidden="true"></div>
+
+    <div class="stack-scene" aria-hidden="true">
+      <span class="stack-axis"></span>
+      @for (layer of layers(); track layer.nameKey; let i = $index) {
+        <div
+          class="stack-plate"
+          [class.is-active]="i === activeIndex()"
+          [class.is-above]="i < activeIndex()"
+          [style.--level]="level(i)"
+          (click)="goTo(i)"
+        >
+          <div class="stack-plate-face">
+            <i class="fas text-2xl lg:text-3xl" [class]="layer.icon"></i>
+            <span class="stack-plate-label">{{ layer.nameKey | translate }}</span>
+          </div>
+        </div>
+      }
+      <span class="stack-packet stack-packet--down"></span>
+      <span class="stack-packet stack-packet--down stack-packet--late"></span>
+      <span class="stack-packet stack-packet--up"></span>
+    </div>
+
+    <div class="absolute right-5 bottom-5 left-5 flex flex-wrap items-center justify-between gap-3 text-xs text-slate-300" aria-hidden="true">
+      <span class="flex items-center gap-x-4">
+        <span class="inline-flex items-center gap-1.5"><span class="size-2 rounded-full bg-mayfair-teal-light shadow-[0_0_8px] shadow-mayfair-teal"></span>{{ 'stack_legend_request' | translate }}</span>
+        <span class="inline-flex items-center gap-1.5"><span class="size-2 rounded-full bg-white shadow-[0_0_8px] shadow-white"></span>{{ 'stack_legend_response' | translate }}</span>
+      </span>
+      @if (scroll) {
+        <span class="stack-scroll-cue inline-flex items-center gap-2 font-semibold tracking-widest uppercase" [class.opacity-0]="progress() > 0.3">
+          <i class="fas fa-computer-mouse text-sm"></i>{{ 'stack_hint_scroll' | translate }}
+        </span>
+      } @else {
+        <span class="font-semibold tracking-widest uppercase">{{ 'stack_hint_tap' | translate }}</span>
+      }
+    </div>
+  </div>
+</ng-template>
+
+<!-- Desktop (lg+): a tall track; the panel pins below the navbar and scrolling moves through the layers -->
+<div #track class="relative hidden lg:block" [style.height]="'calc(100vh - 6rem + ' + (layers().length - 1) * 60 + 'vh)'">
+  <div #pinned class="sticky top-24 grid h-[calc(100vh-8rem)] max-h-[44rem] min-h-[34rem] grid-cols-[minmax(0,1fr)_minmax(0,1fr)] gap-12">
+    <ng-container *ngTemplateOutlet="stage; context: { scroll: true }" />
+
+    <div class="flex min-h-0 gap-8">
+      <!-- Step rail: fills as you scroll; each step scrolls the page to its layer -->
+      <nav class="relative flex shrink-0 flex-col justify-between py-6" [attr.aria-label]="'stack_badge' | translate">
+        <span class="absolute top-10 bottom-10 left-5 w-0.5 bg-slate-200 dark:bg-slate-700" aria-hidden="true"></span>
+        <span
+          class="absolute top-10 bottom-10 left-5 w-0.5 origin-top bg-mayfair-teal"
+          [style.transform]="'scaleY(' + railFill() + ')'"
+          aria-hidden="true"
+        ></span>
+        @for (layer of layers(); track layer.nameKey; let i = $index) {
+          <button
+            type="button"
+            data-rail-button
+            class="relative z-10 flex size-10 items-center justify-center rounded-full border-2 text-sm transition-all duration-300"
+            [class]="
+              i === activeIndex()
+                ? 'scale-110 border-mayfair-teal bg-mayfair-navy text-mayfair-teal shadow-lg shadow-mayfair-teal/30'
+                : i < activeIndex()
+                  ? 'border-mayfair-teal bg-white text-mayfair-teal dark:bg-slate-900'
+                  : 'border-slate-200 bg-white text-slate-400 hover:border-mayfair-teal dark:border-slate-700 dark:bg-slate-900'
+            "
+            [attr.aria-label]="layer.nameKey | translate"
+            [attr.aria-current]="i === activeIndex() ? 'step' : null"
+            (click)="goTo(i)"
+            (keydown)="onKeydown($event, i, 'rail')"
+          >
+            <i class="fas" [class]="layer.icon" aria-hidden="true"></i>
+          </button>
+        }
+      </nav>
+
+      <!-- Descriptions: a vertical strip that slides with the scroll position -->
+      <div class="relative min-w-0 flex-1 overflow-hidden">
+        <div
+          class="absolute inset-x-0 top-0 h-full will-change-transform"
+          [style.transform]="'translateY(' + -settled() * 100 + '%)'"
+        >
+          @for (layer of layers(); track layer.nameKey; let i = $index) {
+            <article
+              class="absolute inset-x-0 flex h-full flex-col justify-center"
+              [style.top.%]="i * 100"
+              [style.opacity]="panelOpacity(i)"
+              [attr.aria-hidden]="i !== activeIndex()"
+            >
+              <p class="mb-3 font-serif text-sm font-bold tracking-widest text-mayfair-teal">
+                {{ (i + 1).toString().padStart(2, '0') }} <span class="text-slate-400">/ {{ layers().length.toString().padStart(2, '0') }}</span>
+              </p>
+              <h3 class="mb-4 font-serif text-3xl font-bold text-mayfair-navy xl:text-4xl dark:text-white">{{ layer.nameKey | translate }}</h3>
+              <p class="mb-6 max-w-md text-lg leading-relaxed text-slate-600 dark:text-slate-300">{{ layer.whyKey | translate }}</p>
+              <ul class="flex flex-wrap gap-2">
+                @for (item of layer.items; track item.label) {
+                  <li
+                    class="rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-mayfair-navy shadow-sm dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200"
+                  >
+                    {{ item.translate ? (item.label | translate) : item.label }}
+                  </li>
+                }
+              </ul>
+            </article>
+          }
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Below lg: stage on top, then a tap-to-open accordion -->
+<div class="space-y-8 lg:hidden">
+  <ng-container *ngTemplateOutlet="stage; context: { scroll: false }" />
+
+  <ol class="space-y-3">
+    @for (layer of layers(); track layer.nameKey; let i = $index) {
+      <li
+        class="relative overflow-hidden rounded-2xl border transition-all duration-500"
+        [class]="
+          i === activeIndex()
+            ? 'border-mayfair-teal bg-white shadow-xl shadow-mayfair-teal/10 dark:bg-slate-900'
+            : 'border-slate-200 bg-white/60 dark:border-slate-700 dark:bg-slate-900/40'
+        "
+      >
+        <button
+          type="button"
+          data-accordion-button
+          class="flex w-full items-center gap-4 p-4 text-left"
+          [attr.aria-expanded]="i === activeIndex()"
+          [attr.aria-controls]="'stack-panel-' + i"
+          (click)="goTo(i)"
+          (keydown)="onKeydown($event, i, 'accordion')"
+        >
+          <span
+            class="flex size-11 shrink-0 items-center justify-center rounded-xl text-lg transition-colors duration-500"
+            [class]="i === activeIndex() ? 'bg-mayfair-navy text-mayfair-teal' : 'bg-mayfair-teal/10 text-mayfair-teal'"
+            aria-hidden="true"
+          >
+            <i class="fas" [class]="layer.icon"></i>
+          </span>
+          <span class="min-w-0 flex-1">
+            <span class="block text-xs font-bold tracking-widest text-mayfair-teal">{{ (i + 1).toString().padStart(2, '0') }}</span>
+            <span class="block font-serif text-lg font-bold text-mayfair-navy dark:text-white">{{ layer.nameKey | translate }}</span>
+          </span>
+          <i
+            class="fas fa-chevron-down text-sm text-slate-400 transition-transform duration-300"
+            [class.rotate-180]="i === activeIndex()"
+            aria-hidden="true"
+          ></i>
+        </button>
+
+        <div [id]="'stack-panel-' + i" class="px-4 pb-5 sm:pl-[4.75rem]" [hidden]="i !== activeIndex()">
+          <p class="animate-fade-in mb-4 text-sm leading-relaxed text-slate-600 dark:text-slate-400">{{ layer.whyKey | translate }}</p>
+          <ul class="flex flex-wrap gap-2">
+            @for (item of layer.items; track item.label; let j = $index) {
+              <li
+                class="animate-fade-in rounded-full border border-slate-200 bg-slate-50 px-3 py-1.5 text-sm font-semibold text-mayfair-navy [animation-fill-mode:backwards] dark:border-slate-700 dark:bg-white/5 dark:text-slate-200"
+                [style.animation-delay.ms]="(j + 1) * CHIP_STAGGER_MS"
+              >
+                {{ item.translate ? (item.label | translate) : item.label }}
+              </li>
+            }
+          </ul>
+        </div>
+      </li>
+    }
+  </ol>
+</div>

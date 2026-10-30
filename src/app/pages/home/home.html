@@ -177,42 +177,10 @@
 </section>
 
 <section id="stack" class="bg-slate-50 px-6 py-24 dark:bg-white/[0.02]" appReveal>
-  <div class="mx-auto max-w-5xl">
+  <div class="mx-auto max-w-7xl">
     <app-section-header badgeKey="stack_badge" titleKey="stack_title" subtitleKey="stack_subtitle" />
 
-    <!-- Layers read top (what users touch) to bottom (what it runs on), joined by a teal "backbone" -->
-    <ol class="relative space-y-6">
-      <span
-        class="absolute top-10 bottom-10 left-6 w-px bg-gradient-to-b from-mayfair-teal/70 via-mayfair-teal/30 to-mayfair-teal/70 md:left-7"
-        aria-hidden="true"
-      ></span>
-      @for (layer of techStack; track layer.nameKey; let i = $index) {
-        <li appReveal [revealDelay]="i * CARD_STAGGER_MS" class="relative flex items-center gap-4 md:gap-6">
-          <div
-            class="relative z-10 flex size-12 shrink-0 items-center justify-center rounded-2xl bg-mayfair-navy text-lg text-mayfair-teal shadow-lg ring-4 ring-slate-50 md:size-14 md:text-xl dark:ring-mayfair-dark"
-            aria-hidden="true"
-          >
-            <i class="fas" [class]="layer.icon"></i>
-          </div>
-          <div class="card card-hover grid flex-1 gap-4 p-6 md:grid-cols-2 md:items-center">
-            <div>
-              <p class="text-xs font-bold tracking-widest text-mayfair-teal">{{ (i + 1).toString().padStart(2, '0') }}</p>
-              <h3 class="font-serif text-xl font-bold text-mayfair-navy dark:text-white">{{ layer.nameKey | translate }}</h3>
-              <p class="mt-1 text-sm leading-relaxed text-slate-600 dark:text-slate-400">{{ layer.whyKey | translate }}</p>
-            </div>
-            <ul class="flex flex-wrap gap-2 md:justify-end">
-              @for (item of layer.items; track item.label) {
-                <li
-                  class="rounded-full border border-slate-200 bg-slate-50 px-3 py-1.5 text-sm font-semibold text-mayfair-navy dark:border-slate-700 dark:bg-white/5 dark:text-slate-200"
-                >
-                  {{ item.translate ? (item.label | translate) : item.label }}
-                </li>
-              }
-            </ul>
-          </div>
-        </li>
-      }
-    </ol>
+    <app-tech-stack [layers]="techStack" />
 
     <p class="mx-auto mt-12 max-w-2xl text-center text-sm font-semibold text-slate-600 dark:text-slate-300">
       <i class="fas fa-arrows-rotate mr-2 text-mayfair-teal" aria-hidden="true"></i>{{ 'stack_footer' | translate }}

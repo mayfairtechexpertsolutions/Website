@@ -15,7 +15,9 @@ import { MobileCtaBarComponent } from '../../shared/components/mobile-cta-bar/mo
 import { SavingsCalculatorComponent } from './savings-calculator/savings-calculator';
 import { ContactFormComponent } from './contact-form/contact-form';
 import { SectionHeaderComponent } from '../../shared/components/section-header/section-header';
-import { BILLING_MODES, MATERIALS, ROADMAP_STEPS, TECH_STACK } from './home.data';
+import { BILLING_MODES, MATERIALS, ROADMAP_STEPS } from './home.data';
+import { TECH_STACK } from '../../core/stack/tech-stack.data';
+import { TechStackComponent } from '../../shared/components/tech-stack/tech-stack';
 import { SeoService } from '../../core/seo/seo.service';
 
 @Component({
@@ -36,6 +38,7 @@ import { SeoService } from '../../core/seo/seo.service';
     PointerParallaxDirective,
     ContactFormComponent,
     SectionHeaderComponent,
+    TechStackComponent,
   ],
   templateUrl: './home.html',
 })

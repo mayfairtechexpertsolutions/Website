@@ -472,6 +472,10 @@ export const translations: Record<Lang, TranslationDict> = {
     stack_item_rest: `REST APIs`,
     stack_item_lb: `Load Balancing`,
     stack_footer: `Already invested in another stack? We work with your existing technology instead of starting over.`,
+    stack_legend_request: `Request`,
+    stack_legend_response: `Response`,
+    stack_hint_scroll: `Scroll to explore`,
+    stack_hint_tap: `Tap a layer to explore`,
   },
   zh: {
     select_language: `選擇語言`,
@@ -942,6 +946,10 @@ export const translations: Record<Lang, TranslationDict> = {
     stack_item_rest: `REST API`,
     stack_item_lb: `負載平衡`,
     stack_footer: `已投資於其他技術？我們會配合您現有的技術，而非推倒重來。`,
+    stack_legend_request: `請求`,
+    stack_legend_response: `回應`,
+    stack_hint_scroll: `向下捲動以探索`,
+    stack_hint_tap: `點按任一層以探索`,
   },
   zh_cn: {
     select_language: `选择语言`,
@@ -1412,6 +1420,10 @@ export const translations: Record<Lang, TranslationDict> = {
     stack_item_rest: `REST API`,
     stack_item_lb: `负载均衡`,
     stack_footer: `已投资于其他技术？我们会配合您现有的技术，而非推倒重来。`,
+    stack_legend_request: `请求`,
+    stack_legend_response: `响应`,
+    stack_hint_scroll: `向下滚动以探索`,
+    stack_hint_tap: `点按任一层以探索`,
   },
   fr: {
     select_language: `Choisir la Langue`,
@@ -1882,5 +1894,9 @@ export const translations: Record<Lang, TranslationDict> = {
     stack_item_rest: `API REST`,
     stack_item_lb: `Répartition de charge`,
     stack_footer: `Déjà engagé sur une autre technologie ? Nous travaillons avec votre existant plutôt que de tout reprendre à zéro.`,
+    stack_legend_request: `Requête`,
+    stack_legend_response: `Réponse`,
+    stack_hint_scroll: `Faites défiler pour explorer`,
+    stack_hint_tap: `Touchez une couche pour explorer`,
   },
 };
