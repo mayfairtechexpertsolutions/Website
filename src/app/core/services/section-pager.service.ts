@@ -3,7 +3,7 @@ import { isPlatformBrowser } from '@angular/common';
 
 /** Desktop breakpoint (Tailwind `lg`) where wheel paging is on; smaller screens scroll natively. */
 export const PAGING_QUERY = '(min-width: 1024px)';
-/** Height of the sticky navbar: a section "starts" when its top sits this far below the viewport top. */
+/** Space reserved under the viewport top for the sticky navbar when it can't be measured (and the tech stack's pin). */
 export const NAVBAR_OFFSET = 96;
 /** Each page's top-level blocks, plus the footer. Section dividers aren't stops. */
 export const SECTION_SELECTOR = 'router-outlet + * > :is(header, section, main, app-page-hero), app-footer';
@@ -20,8 +20,14 @@ const STOP_EPSILON_PX = 4;
 const MIN_STOP_GAP_PX = 120;
 /** In a section taller than the screen, one gesture glides this share of the screen (the rest stays as context). */
 const SCREEN_STEP = 0.85;
-/** A section up to this much taller than the screen still glides straight to the next one in one step. */
-const FIT_SLACK = 0.15;
+/** A glide may pass over at most this much (px) of content it never shows: rounding, never a line of text. */
+const MAX_SKIPPED_CONTENT_PX = 8;
+/**
+ * Height of the fixed navbar once the page is scrolled (it shrinks from 81px). Every stop below the very top is a
+ * scrolled state, so stops are placed against this height: measuring the live navbar would race its shrink
+ * transition. Keep in sync with the scrolled navbar (py-1.5 + h-10 logo + 1px border).
+ */
+export const SCROLLED_NAVBAR_PX = 55;
 
 /** Ease-in-out between a sine curve (felt slow) and a cubic one (felt abrupt). */
 const easeInOutQuad = (t: number) => (t < 0.5 ? 2 * t * t : 1 - (-2 * t + 2) ** 2 / 2);
@@ -42,12 +48,39 @@ interface Stop {
   resolve: () => number;
 }
 
+/** A section's box and its content box (inside its vertical padding), in document coordinates. */
+interface Block {
+  top: number;
+  bottom: number;
+  contentTop: number;
+  contentBottom: number;
+}
+
+function measureBlock(el: HTMLElement): Block {
+  const style = getComputedStyle(el);
+  const top = documentTop(el);
+  const bottom = top + el.offsetHeight;
+  return {
+    top,
+    bottom,
+    contentTop: top + parseFloat(style.paddingTop || '0'),
+    contentBottom: bottom - parseFloat(style.paddingBottom || '0'),
+  };
+}
+
+/** Height of the fixed navbar at every stop but the very top; stops keep everything below it. */
+function navbarHeight(): number {
+  return SCROLLED_NAVBAR_PX;
+}
+
 /**
- * Site-wide section paging (desktop only). A wheel gesture down eases the page to the next section's top (just
- * under the navbar), up to the previous one. A section taller than the screen gets a second stop with its bottom
- * edge at the bottom of the screen, so every stop shows whole sections, never a sliver of the next one; past two
- * screens, each gesture glides one screen (SCREEN_STEP) until the next stop is in reach. A gesture made during a
- * glide carries on from where that glide is heading. Components can add stops of their own with `addStops`.
+ * Site-wide section paging (desktop only). A wheel gesture down eases the page to the next section, up to the
+ * previous one. Each section gets one stop when its content (inside its padding) fits under the navbar: at its
+ * top if the whole section fits, otherwise with the content centred on screen (padding trimmed evenly). A section whose content is taller
+ * than the screen gets two: its top under the navbar, and its bottom edge at the bottom of the screen. A glide
+ * that would pass over real content it never shows (more than MAX_SKIPPED_CONTENT_PX) moves one screen
+ * (SCREEN_STEP) instead. A gesture made during a glide carries on from where that glide is heading. Components
+ * can add stops of their own with `addStops`.
  *
  * The wheel is the only input taken over: keyboard, scrollbar, anchor links and touch scroll as usual, and a
  * click mid-glide hands the page straight back. Under prefers-reduced-motion paging jumps instead of easing.
@@ -151,25 +184,51 @@ export class SectionPagerService {
 
     event.preventDefault();
     if (!isNewGesture) return;
-    const screen = window.innerHeight - NAVBAR_OFFSET;
-    const fits = Math.abs(next.at - y) <= screen * (1 + FIT_SLACK);
-    this.scrollTo(fits ? next.resolve : y + (down ? 1 : -1) * screen * SCREEN_STEP);
+    const screen = window.innerHeight - navbarHeight();
+    const skipped = this.hiddenContent(Math.min(y, next.at), Math.max(y, next.at));
+    this.scrollTo(skipped <= MAX_SKIPPED_CONTENT_PX ? next.resolve : y + (down ? 1 : -1) * screen * SCREEN_STEP);
+  }
+
+  /** Pixels of section content that neither the view at `from` nor the one at `to` (from < to) shows. */
+  private hiddenContent(from: number, to: number): number {
+    const bandTop = from + window.innerHeight;
+    const bandBottom = to + navbarHeight();
+    if (bandBottom <= bandTop) return 0;
+    return Array.from(document.querySelectorAll<HTMLElement>(SECTION_SELECTOR), measureBlock).reduce(
+      (sum, b) => sum + Math.max(0, Math.min(bandBottom, b.contentBottom) - Math.max(bandTop, b.contentTop)),
+      0,
+    );
   }
 
   /** Every stop on the current page, sorted, within the scrollable range. */
   private stops(): Stop[] {
-    const screen = window.innerHeight - NAVBAR_OFFSET;
-    const sections = Array.from(document.querySelectorAll<HTMLElement>(SECTION_SELECTOR)).flatMap((el) => {
-      const top = () => documentTop(el) - NAVBAR_OFFSET;
-      const end = () => documentTop(el) + el.offsetHeight - window.innerHeight;
-      return el.offsetHeight > screen * (1 + FIT_SLACK) ? [top, end] : [top];
-    });
     const extra = Array.from(this.sources).flatMap((source) => {
       const values = source();
-      return values.map((value, i) => () => source()[i] ?? value);
+      return values.map((value, i) => ({ at: value, measure: () => source()[i] ?? value }));
+    });
+    const sections = Array.from(document.querySelectorAll<HTMLElement>(SECTION_SELECTOR)).flatMap((el) => {
+      const view = () => ({ nav: navbarHeight(), height: window.innerHeight, block: measureBlock(el) });
+      const { nav, height, block } = view();
+      const screen = height - nav;
+      const top = () => measureBlock(el).top - navbarHeight();
+      if (block.bottom - block.top <= screen + STOP_EPSILON_PX) return [top];
+      if (block.contentBottom - block.contentTop <= screen) {
+        // Centre the content, without showing anything of the neighbouring sections.
+        return [
+          () => {
+            const v = view();
+            const centred = (v.block.contentTop + v.block.contentBottom) / 2 - v.nav - (v.height - v.nav) / 2;
+            return Math.min(v.block.bottom - v.height, Math.max(v.block.top - v.nav, centred));
+          },
+        ];
+      }
+      // A component paging through this section (the tech stack's layers) decides where it ends.
+      const driven = extra.some((s) => s.at > block.top - nav && s.at < block.bottom - nav);
+      return driven ? [top] : [top, () => measureBlock(el).bottom - window.innerHeight];
     });
     const clamp = (s: number) => Math.min(document.documentElement.scrollHeight - window.innerHeight, Math.max(0, s));
-    const sorted = [...sections, ...extra]
+    // The very top of the page is always a stop, so scrolling up ends exactly where the page starts.
+    const sorted = [() => 0, ...sections, ...extra.map((s) => s.measure)]
       .map((measure) => ({ at: clamp(measure()), resolve: () => clamp(measure()) }))
       .sort((a, b) => a.at - b.at);
     const kept: Stop[] = [];

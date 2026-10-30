@@ -1,9 +1,10 @@
 <app-page-hero
+  [fill]="true"
   [badge]="'erp_hero_badge' | translate"
   [title]="'erp_hero_title' | translate"
   [subtitle]="'erp_hero_subtitle' | translate"
 >
-  <div class="mt-10 mb-4 flex flex-col items-center justify-center gap-4 sm:flex-row">
+  <div class="mt-10 mb-4 flex flex-col items-center justify-center gap-4 sm:flex-row lg:mt-8">
     <a routerLink="/erp.html" fragment="erp-contact" class="btn btn-lg btn-primary btn-glow">
       {{ 'erp_hero_btn_trial' | translate }}
     </a>
@@ -13,7 +14,7 @@
   </div>
   <p class="text-xs text-slate-400">{{ 'erp_hero_note' | translate }}</p>
 
-  <div class="mx-auto mt-16 grid max-w-2xl grid-cols-3 gap-6 border-t border-white/10 pt-10">
+  <div class="mx-auto mt-16 grid max-w-2xl grid-cols-3 gap-6 border-t border-white/10 pt-10 lg:mt-10 lg:pt-8">
     @for (stat of heroStats; track stat.value) {
       <div>
         <div class="font-serif text-2xl font-bold text-mayfair-teal md:text-3xl">{{ stat.value | translate }}</div>
@@ -64,11 +65,14 @@
     <app-section-header badgeKey="erp_features_badge" titleKey="erp_features_title" subtitleKey="erp_features_subtitle" />
     <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
       @for (feat of features; track feat.title) {
+        <!-- Icon beside the title on desktop (above it on small screens), keeping the section within one screen -->
         <div class="card card-hover p-6">
-          <div class="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-mayfair-teal/10 text-xl text-mayfair-teal">
-            <i class="fas" [class]="feat.icon"></i>
+          <div class="mb-2 lg:flex lg:items-center lg:gap-3">
+            <div class="mb-4 flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-mayfair-teal/10 text-xl text-mayfair-teal lg:mb-0 lg:h-10 lg:w-10 lg:text-lg">
+              <i class="fas" [class]="feat.icon"></i>
+            </div>
+            <h3 class="font-serif text-lg font-bold text-mayfair-navy dark:text-white">{{ feat.title | translate }}</h3>
           </div>
-          <h3 class="mb-2 font-serif text-lg font-bold text-mayfair-navy dark:text-white">{{ feat.title | translate }}</h3>
           <p class="text-sm leading-relaxed text-slate-500 dark:text-slate-400">{{ feat.desc | translate }}</p>
         </div>
       }
@@ -98,14 +102,14 @@
 <section id="pricing" class="bg-mayfair-navy px-6 py-24" appReveal>
   <div class="mx-auto max-w-7xl">
     <app-section-header badgeKey="erp_pricing_badge" titleKey="erp_pricing_title" subtitleKey="erp_pricing_subtitle" tone="dark" />
-    <p class="mx-auto -mt-6 mb-12 max-w-xl rounded-xl bg-mayfair-teal/10 p-4 text-center text-sm font-semibold text-mayfair-teal">
+    <p class="mx-auto -mt-6 mb-12 max-w-xl rounded-xl bg-mayfair-teal/10 p-4 text-center text-sm font-semibold text-mayfair-teal lg:-mt-4 lg:mb-6 lg:py-3">
       {{ 'erp_pricing_trial_banner' | translate }}
     </p>
 
     <div class="grid grid-cols-1 gap-8 lg:grid-cols-3">
       @for (plan of plans; track plan.nameKey) {
         <div
-          class="relative flex flex-col rounded-[2rem] p-8"
+          class="relative flex flex-col rounded-[2rem] p-8 lg:p-7"
           [class]="plan.badgeKey ? 'border-2 border-mayfair-teal bg-mayfair-dark lg:-translate-y-4' : 'border border-white/10 bg-white/5'"
         >
           @if (plan.badgeKey) {
@@ -114,12 +118,12 @@
             </span>
           }
           <h3 class="mb-1 font-serif text-xl font-bold text-white">{{ plan.nameKey | translate }}</h3>
-          <p class="mb-6 text-sm text-slate-400">{{ plan.taglineKey | translate }}</p>
+          <p class="mb-6 text-sm text-slate-400 lg:mb-4">{{ plan.taglineKey | translate }}</p>
           <div class="mb-1 font-serif text-4xl font-bold text-white">
             {{ plan.priceKey | translate }}<span class="text-base font-normal text-slate-400">{{ 'erp_plan_period' | translate }}</span>
           </div>
-          <p class="mb-6 text-xs text-mayfair-teal">{{ plan.usersKey | translate }}</p>
-          <ul class="mb-8 flex-1 space-y-3 text-sm text-slate-300">
+          <p class="mb-6 text-xs text-mayfair-teal lg:mb-4">{{ plan.usersKey | translate }}</p>
+          <ul class="mb-8 flex-1 space-y-3 text-sm text-slate-300 lg:mb-6 lg:space-y-2">
             @for (key of plan.featureKeys; track key) {
               <li class="flex items-center gap-2"><i class="fas fa-check text-mayfair-teal"></i>{{ key | translate }}</li>
             }
@@ -130,7 +134,7 @@
         </div>
       }
     </div>
-    <p class="mt-10 text-center text-xs text-slate-400">{{ 'erp_pricing_note' | translate }}</p>
+    <p class="mt-10 text-center text-xs text-slate-400 lg:mt-4">{{ 'erp_pricing_note' | translate }}</p>
   </div>
 </section>
 
@@ -172,8 +176,13 @@
 </section>
 
 <section id="erp-contact" class="px-6 py-24" appReveal>
-  <div class="mx-auto max-w-3xl overflow-hidden rounded-[2.5rem] border border-slate-100 shadow-2xl dark:border-slate-700">
-    <div class="border-b-4 border-mayfair-teal bg-mayfair-navy p-10 text-center text-white">
+  <!-- Desktop: navy title panel beside the form, so the whole form fits on one screen -->
+  <div
+    class="mx-auto max-w-3xl overflow-hidden rounded-[2.5rem] border border-slate-100 shadow-2xl lg:grid lg:max-w-5xl lg:grid-cols-[minmax(0,2fr)_minmax(0,3fr)] dark:border-slate-700"
+  >
+    <div
+      class="border-b-4 border-mayfair-teal bg-mayfair-navy p-10 text-center text-white lg:flex lg:flex-col lg:justify-center lg:border-r-4 lg:border-b-0 lg:p-12 lg:text-left"
+    >
       <h2 class="mb-2 font-serif text-3xl font-bold">{{ 'erp_contact_title' | translate }}</h2>
       <p class="text-xs font-bold tracking-widest text-mayfair-teal uppercase">{{ 'erp_contact_badge' | translate }}</p>
     </div>

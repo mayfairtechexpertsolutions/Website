@@ -1,8 +1,9 @@
-<div class="gradient-bg rounded-[2.5rem] p-8 md:p-14">
-  <app-section-header badgeKey="calc_badge" titleKey="calc_main_title" subtitleKey="calc_subtitle" tone="dark" />
+<!-- Desktop: inputs + call to action on the left, the two results stacked on the right (fits one screen) -->
+<div class="gradient-bg rounded-[2.5rem] p-8 md:p-14 lg:grid lg:grid-cols-[minmax(0,5fr)_minmax(0,6fr)] lg:content-center lg:gap-x-12 lg:p-12">
+  <app-section-header class="lg:col-start-1" badgeKey="calc_badge" titleKey="calc_main_title" subtitleKey="calc_subtitle" tone="dark" align="responsive" />
 
-  <div class="mx-auto mb-10 max-w-md">
-    <label class="mb-3 block text-center text-sm font-semibold text-slate-300">{{ 'calc_label' | translate }}</label>
+  <div class="mx-auto mb-10 max-w-md lg:col-start-1 lg:mx-0 lg:mt-8 lg:mb-0 lg:max-w-none">
+    <label class="mb-3 block text-center text-sm font-semibold text-slate-300 lg:text-left">{{ 'calc_label' | translate }}</label>
     <div class="flex items-center gap-4 rounded-2xl border border-white/10 bg-white/5 p-4">
       <input
         type="range"
@@ -16,14 +17,14 @@
       <span class="w-20 shrink-0 text-right font-serif text-xl font-bold text-mayfair-teal">{{ staffCount() }}</span>
       <span class="text-xs text-slate-400">{{ 'calc_users' | translate }}</span>
     </div>
-    <p class="mt-3 text-center text-xs text-slate-400">{{ 'calc_assumption' | translate }}</p>
+    <p class="mt-3 text-center text-xs text-slate-400 lg:text-left">{{ 'calc_assumption' | translate }}</p>
   </div>
 
-  <div class="grid grid-cols-1 gap-8 md:grid-cols-2">
-    <div class="rounded-3xl border border-white/10 bg-white/5 p-8">
+  <div class="grid grid-cols-1 gap-8 md:grid-cols-2 lg:col-start-2 lg:row-span-4 lg:row-start-1 lg:grid-cols-1 lg:content-center lg:gap-5">
+    <div class="rounded-3xl border border-white/10 bg-white/5 p-8 lg:p-6">
       <h3 class="mb-2 font-serif text-xl font-bold text-white">{{ 'calc_rent_title' | translate }}</h3>
       <p class="mb-4 text-sm text-slate-400">{{ 'calc_rent_desc' | translate }}</p>
-      <div class="mb-6 font-serif text-4xl font-bold text-red-300">{{ formattedTotal() }}</div>
+      <div class="mb-6 font-serif text-4xl font-bold text-red-300 lg:mb-4">{{ formattedTotal() }}</div>
       <ul class="space-y-2 text-sm text-slate-300">
         <li class="flex items-center gap-2"><i class="fas fa-xmark text-red-400"></i>{{ 'calc_rent_li1' | translate }}</li>
         <li class="flex items-center gap-2"><i class="fas fa-xmark text-red-400"></i>{{ 'calc_rent_li2' | translate }}</li>
@@ -31,10 +32,10 @@
       </ul>
     </div>
 
-    <div class="rounded-3xl border-2 border-mayfair-teal bg-mayfair-teal/5 p-8">
+    <div class="rounded-3xl border-2 border-mayfair-teal bg-mayfair-teal/5 p-8 lg:p-6">
       <h3 class="mb-2 font-serif text-xl font-bold text-white">{{ 'calc_own_title' | translate }}</h3>
       <p class="mb-4 text-sm text-slate-400">{{ 'calc_own_desc' | translate }}</p>
-      <div class="mb-6 font-serif text-4xl font-bold text-mayfair-teal">{{ 'calc_equity' | translate }}</div>
+      <div class="mb-6 font-serif text-4xl font-bold text-mayfair-teal lg:mb-4">{{ 'calc_equity' | translate }}</div>
       <ul class="space-y-2 text-sm text-slate-300">
         <li class="flex items-center gap-2"><i class="fas fa-check text-mayfair-teal"></i>{{ 'calc_own_li1' | translate }}</li>
         <li class="flex items-center gap-2"><i class="fas fa-check text-mayfair-teal"></i>{{ 'calc_own_li2' | translate }}</li>
@@ -43,13 +44,13 @@
     </div>
   </div>
 
-  <p class="mt-8 text-center text-xs text-slate-400" [innerHTML]="'calc_logic' | translate"></p>
+  <p class="mt-8 text-center text-xs text-slate-400 lg:col-start-1 lg:text-left" [innerHTML]="'calc_logic' | translate"></p>
 
-  <div class="mt-10 text-center">
+  <div class="mt-10 text-center lg:col-start-1 lg:mt-8 lg:text-left">
     <a
       routerLink="/"
       fragment="contact"
-      class="btn btn-lg btn-primary"
+      class="btn btn-lg btn-primary lg:w-full lg:px-6"
     >
       {{ formattedTotal() }} — {{ 'calc_cta' | translate }}
     </a>

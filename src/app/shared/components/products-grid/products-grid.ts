@@ -19,7 +19,7 @@ import { ProductCardComponent } from '../product-card/product-card';
             <div
               class="flex h-full flex-col items-center justify-center rounded-[2rem] border-2 border-dashed border-slate-200 p-8 text-center dark:border-slate-700"
             >
-              <div class="mb-6 flex h-14 w-14 items-center justify-center rounded-2xl bg-slate-100 text-slate-300 dark:bg-white/5 dark:text-slate-500">
+              <div class="mb-6 flex h-14 w-14 items-center justify-center rounded-2xl bg-slate-100 text-slate-300 lg:mb-4 dark:bg-white/5 dark:text-slate-500">
                 <i class="fas fa-hourglass-half text-xl"></i>
               </div>
               <h3 class="mb-2 font-serif text-xl font-bold text-slate-400 dark:text-slate-400">

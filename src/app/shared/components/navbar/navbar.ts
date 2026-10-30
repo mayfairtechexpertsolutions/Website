@@ -13,6 +13,9 @@ import { ERP_NAV_LINKS, MAIN_NAV_LINKS } from './nav-link.model';
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [RouterLink, TranslatePipe, LanguageSwitcherComponent],
   templateUrl: './navbar.html',
+  // The nav is `fixed` and shrinks once scrolled; the host keeps its full (unscrolled) height in the page flow, so
+  // that shrink never shifts the page. Keep these in sync with the nav's padding + logo height (+1px border).
+  host: { class: 'block h-[73px] md:h-[81px]' },
 })
 export class NavbarComponent {
   protected readonly mobileMenu = inject(MobileMenuService);

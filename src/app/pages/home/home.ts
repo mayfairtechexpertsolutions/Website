@@ -19,6 +19,7 @@ import { BILLING_MODES, MATERIALS, ROADMAP_STEPS } from './home.data';
 import { TECH_STACK } from '../../core/stack/tech-stack.data';
 import { TechStackComponent } from '../../shared/components/tech-stack/tech-stack';
 import { SeoService } from '../../core/seo/seo.service';
+import { WHATSAPP_URL } from '../../core/contact/contact.data';
 
 @Component({
   selector: 'app-home',
@@ -50,6 +51,7 @@ export class HomeComponent {
   protected readonly materials = MATERIALS;
   protected readonly roadmapSteps = ROADMAP_STEPS;
   protected readonly techStack = TECH_STACK;
+  protected readonly whatsappChatUrl = WHATSAPP_URL;
 
   constructor() {
     inject(SeoService).set({

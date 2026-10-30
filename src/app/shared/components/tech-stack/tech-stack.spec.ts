@@ -161,8 +161,11 @@ describe('TechStackComponent', () => {
         Object.defineProperty(document.documentElement, 'scrollHeight', { value: 0, configurable: true });
       });
 
+      /** Wheel events carry a fake clock, so gesture timing doesn't depend on how fast the test runs. */
+      let clock = 1000;
       const wheel = (deltaY: number) => {
         const event = new WheelEvent('wheel', { deltaY, cancelable: true });
+        Object.defineProperty(event, 'timeStamp', { value: clock });
         window.dispatchEvent(event);
         return event;
       };
@@ -179,7 +182,7 @@ describe('TechStackComponent', () => {
         expect(wheel(100).defaultPrevented).toBe(true); // same gesture: no second step
         expect(scrollTo).toHaveBeenCalledTimes(1);
 
-        await new Promise((resolve) => setTimeout(resolve, 250));
+        clock += 250; // a new gesture
         wheel(-100);
         expect(scrollTo).toHaveBeenLastCalledWith({ top: expect.closeTo(1000 - 1400 / 3, 5), behavior: 'instant' });
       });

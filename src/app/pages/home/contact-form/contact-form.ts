@@ -21,7 +21,6 @@ export class ContactFormComponent {
   private readonly fb = inject(FormBuilder);
 
   protected readonly submitState = signal<'idle' | 'success' | 'error'>('idle');
-  protected readonly whatsappChatUrl = WHATSAPP_URL;
 
   protected readonly form = this.fb.nonNullable.group({
     name: ['', Validators.required],

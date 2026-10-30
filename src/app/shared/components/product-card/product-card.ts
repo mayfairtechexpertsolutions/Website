@@ -19,18 +19,21 @@ import { Product } from '../../../core/products/product.model';
             >{{ 'products_new_badge' | translate }}</span
           >
         }
-        <div
-          class="mb-6 flex h-14 w-14 items-center justify-center rounded-2xl bg-slate-100 text-mayfair-teal transition-all duration-500 group-hover:rotate-3 group-hover:bg-mayfair-teal group-hover:text-mayfair-navy dark:bg-white/5"
-        >
-          <i class="fas text-xl" [class]="product().icon"></i>
+        <!-- Icon beside the name on desktop (above it on small screens), keeping sections within one screen -->
+        <div class="mb-2 lg:mb-4 lg:flex lg:items-center lg:gap-4 lg:pr-16">
+          <div
+            class="mb-6 flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-slate-100 text-mayfair-teal transition-all duration-500 group-hover:rotate-3 group-hover:bg-mayfair-teal group-hover:text-mayfair-navy lg:mb-0 dark:bg-white/5"
+          >
+            <i class="fas text-xl" [class]="product().icon"></i>
+          </div>
+          <h3 class="font-serif text-xl font-bold text-mayfair-navy transition-colors group-hover:text-white dark:text-white">
+            {{ product().nameKey | translate }}
+          </h3>
         </div>
-        <h3 class="mb-2 font-serif text-xl font-bold text-mayfair-navy transition-colors group-hover:text-white dark:text-white">
-          {{ product().nameKey | translate }}
-        </h3>
         <p class="mb-6 text-sm leading-relaxed text-slate-500 transition-colors group-hover:text-slate-300 dark:text-slate-400">
           {{ product().taglineKey | translate }}
         </p>
-        <ul class="mb-8 flex-1 space-y-2 text-sm text-slate-600 transition-colors group-hover:text-slate-300 dark:text-slate-300">
+        <ul class="mb-8 flex-1 space-y-2 text-sm lg:mb-6 text-slate-600 transition-colors group-hover:text-slate-300 dark:text-slate-300">
           @for (key of product().highlightKeys; track key) {
             <li class="flex items-center gap-2">
               <i class="fas fa-check text-mayfair-teal"></i>
