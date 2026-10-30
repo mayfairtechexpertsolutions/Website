@@ -407,6 +407,23 @@ h3,
     transform: translateZ(calc(var(--gap) * 4));
   }
 }
+/*
+ * Desktop scroll mode: --stack-settled (0..n-1, eased to rest on each layer) and --stack-fill (0..1) are written
+ * every frame by TechStackComponent, so these move without Angular change detection.
+ */
+.stack-strip {
+  transform: translateY(calc(var(--stack-settled, 0) * -100%));
+  will-change: transform;
+}
+/* Distance (in layers) from the panel in view, as |settled - i| using max() for broad browser support */
+.stack-panel {
+  --distance: min(1, max(var(--stack-settled, 0) - var(--i), var(--i) - var(--stack-settled, 0)));
+  opacity: calc(1 - var(--distance) * 0.85);
+  transform: scale(calc(1 - var(--distance) * 0.04));
+}
+.stack-rail-fill {
+  transform: scaleY(var(--stack-fill, 0));
+}
 /* "Scroll" cue under the desktop stage: the mouse icon nudges downward until the visitor starts scrolling */
 .stack-scroll-cue {
   transition: opacity 0.4s;

@@ -5,6 +5,7 @@ import { filter } from 'rxjs';
 import { NavbarComponent } from './shared/components/navbar/navbar';
 import { FooterComponent } from './shared/components/footer/footer';
 import { MobileMenuComponent } from './shared/components/mobile-menu/mobile-menu';
+import { SectionPagerService } from './core/services/section-pager.service';
 
 // Offsets anchor-link scrolling (e.g. routerLink="/#contact") so content
 // doesn't land underneath the sticky navbar.
@@ -22,6 +23,9 @@ export class App {
 
   constructor() {
     if (this.isBrowser) {
+      // Site-wide wheel paging between sections (desktop); it runs on its own once created.
+      inject(SectionPagerService);
+
       // Angular's built-in withInMemoryScrolling anchor scroll (and
       // ViewportScroller.scrollToAnchor) never actually scrolls in this app,
       // so we drive it ourselves with plain DOM APIs. `behavior` must be

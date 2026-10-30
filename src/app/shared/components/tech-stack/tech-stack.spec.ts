@@ -3,10 +3,15 @@ import { TECH_STACK } from '../../../core/stack/tech-stack.data';
 import { TechStackComponent, settleProgress } from './tech-stack';
 
 describe('TechStackComponent', () => {
-  const stubDesktop = (matches: boolean) =>
-    vi.stubGlobal('matchMedia', () => ({ matches, addEventListener() {}, removeEventListener() {} }));
+  /** Stubs the two media queries the component reads: desktop width and reduced motion. */
+  const stubMedia = ({ desktop = false, reducedMotion = false } = {}) =>
+    vi.stubGlobal('matchMedia', (query: string) => ({
+      matches: query.includes('reduced-motion') ? reducedMotion : desktop,
+      addEventListener() {},
+      removeEventListener() {},
+    }));
 
-  beforeEach(() => stubDesktop(false));
+  beforeEach(() => stubMedia());
   afterEach(() => vi.unstubAllGlobals());
 
   const createComponent = () => {
@@ -81,8 +86,11 @@ describe('TechStackComponent', () => {
     });
   });
 
+  const cssVar = (fixture: Fixture, name: string) => Number(root(fixture).style.getPropertyValue(name));
+
   describe('lg and up (scroll-driven)', () => {
-    beforeEach(() => stubDesktop(true));
+    // Reduced motion skips the glide, so one frame lands exactly on the scroll position.
+    beforeEach(() => stubMedia({ desktop: true, reducedMotion: true }));
 
     it('follows the scroll position through the track', async () => {
       const fixture = createComponent();
@@ -99,15 +107,28 @@ describe('TechStackComponent', () => {
       expect(activePlates(el)).toEqual([true, false, false, false]);
     });
 
-    it('slides the description strip with the scroll, resting on each layer', async () => {
+    it('drives the description strip and rail through CSS variables, resting on each layer', async () => {
       const fixture = createComponent();
-      const strip = () => root(fixture).querySelector<HTMLElement>('.will-change-transform')!.style.transform;
 
       await scrollTrack(fixture, 700); // progress 1.5: halfway between the second and third layer
-      expect(strip()).toBe('translateY(-150%)');
+      expect(cssVar(fixture, '--stack-settled')).toBeCloseTo(1.5);
+      expect(cssVar(fixture, '--stack-fill')).toBeCloseTo(0.5);
 
       await scrollTrack(fixture, 490); // progress 1.05: still resting on the second layer
-      expect(strip()).toBe('translateY(-100%)');
+      expect(cssVar(fixture, '--stack-settled')).toBe(1);
+    });
+
+    it('glides toward the scroll position over several frames instead of jumping', async () => {
+      stubMedia({ desktop: true, reducedMotion: false });
+      const fixture = createComponent();
+
+      await scrollTrack(fixture, 1400); // target: the last layer, fill 1
+      const afterOneFrame = cssVar(fixture, '--stack-fill');
+      expect(afterOneFrame).toBeGreaterThan(0);
+      expect(afterOneFrame).toBeLessThan(1);
+
+      await new Promise((resolve) => setTimeout(resolve, 1500));
+      expect(cssVar(fixture, '--stack-fill')).toBe(1);
     });
 
     it('eases progress so it rests near each layer and glides between them', () => {
@@ -126,7 +147,48 @@ describe('TechStackComponent', () => {
 
       root(fixture).querySelectorAll<HTMLButtonElement>('[data-rail-button]')[3].click();
 
-      expect(scrollTo).toHaveBeenCalledWith({ top: window.scrollY + 1400, behavior: 'smooth' });
+      expect(scrollTo).toHaveBeenCalledWith({ top: 1400, behavior: 'instant' });
+    });
+
+    describe('wheel paging (through SectionPagerService)', () => {
+      // The page sits 1000px down; scrollTrack moves the track instead, so a layer's stop is 1000 - px + 1400 * i / 3.
+      beforeEach(() => {
+        Object.defineProperty(window, 'scrollY', { value: 1000, configurable: true });
+        Object.defineProperty(document.documentElement, 'scrollHeight', { value: 10000, configurable: true });
+      });
+      afterEach(() => {
+        Object.defineProperty(window, 'scrollY', { value: 0, configurable: true });
+        Object.defineProperty(document.documentElement, 'scrollHeight', { value: 0, configurable: true });
+      });
+
+      const wheel = (deltaY: number) => {
+        const event = new WheelEvent('wheel', { deltaY, cancelable: true });
+        window.dispatchEvent(event);
+        return event;
+      };
+
+      it('moves one layer per wheel gesture, swallowing the rest of the gesture', async () => {
+        const scrollTo = vi.fn();
+        vi.stubGlobal('scrollTo', scrollTo);
+        const fixture = createComponent();
+        await scrollTrack(fixture, 1400 / 3); // on the second layer
+
+        expect(wheel(100).defaultPrevented).toBe(true);
+        expect(scrollTo).toHaveBeenLastCalledWith({ top: expect.closeTo(1000 + 1400 / 3, 5), behavior: 'instant' });
+
+        expect(wheel(100).defaultPrevented).toBe(true); // same gesture: no second step
+        expect(scrollTo).toHaveBeenCalledTimes(1);
+
+        await new Promise((resolve) => setTimeout(resolve, 250));
+        wheel(-100);
+        expect(scrollTo).toHaveBeenLastCalledWith({ top: expect.closeTo(1000 - 1400 / 3, 5), behavior: 'instant' });
+      });
+
+      it('lets the page scroll normally past the last layer when nothing follows', async () => {
+        const fixture = createComponent();
+        await scrollTrack(fixture, 1400);
+        expect(wheel(100).defaultPrevented).toBe(false);
+      });
     });
   });
 });

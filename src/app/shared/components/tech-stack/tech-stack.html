@@ -31,7 +31,7 @@
         <span class="inline-flex items-center gap-1.5"><span class="size-2 rounded-full bg-white shadow-[0_0_8px] shadow-white"></span>{{ 'stack_legend_response' | translate }}</span>
       </span>
       @if (scroll) {
-        <span class="stack-scroll-cue inline-flex items-center gap-2 font-semibold tracking-widest uppercase" [class.opacity-0]="progress() > 0.3">
+        <span class="stack-scroll-cue inline-flex items-center gap-2 font-semibold tracking-widest uppercase" [class.opacity-0]="scrolledIn()">
           <i class="fas fa-computer-mouse text-sm"></i>{{ 'stack_hint_scroll' | translate }}
         </span>
       } @else {
@@ -50,11 +50,7 @@
       <!-- Step rail: fills as you scroll; each step scrolls the page to its layer -->
       <nav class="relative flex shrink-0 flex-col justify-between py-6" [attr.aria-label]="'stack_badge' | translate">
         <span class="absolute top-10 bottom-10 left-5 w-0.5 bg-slate-200 dark:bg-slate-700" aria-hidden="true"></span>
-        <span
-          class="absolute top-10 bottom-10 left-5 w-0.5 origin-top bg-mayfair-teal"
-          [style.transform]="'scaleY(' + railFill() + ')'"
-          aria-hidden="true"
-        ></span>
+        <span class="stack-rail-fill absolute top-10 bottom-10 left-5 w-0.5 origin-top bg-mayfair-teal" aria-hidden="true"></span>
         @for (layer of layers(); track layer.nameKey; let i = $index) {
           <button
             type="button"
@@ -77,17 +73,14 @@
         }
       </nav>
 
-      <!-- Descriptions: a vertical strip that slides with the scroll position -->
+      <!-- Descriptions: a vertical strip that slides with the scroll position (driven by --stack-settled) -->
       <div class="relative min-w-0 flex-1 overflow-hidden">
-        <div
-          class="absolute inset-x-0 top-0 h-full will-change-transform"
-          [style.transform]="'translateY(' + -settled() * 100 + '%)'"
-        >
+        <div class="stack-strip absolute inset-x-0 top-0 h-full">
           @for (layer of layers(); track layer.nameKey; let i = $index) {
             <article
-              class="absolute inset-x-0 flex h-full flex-col justify-center"
+              class="stack-panel absolute inset-x-0 flex h-full flex-col justify-center"
               [style.top.%]="i * 100"
-              [style.opacity]="panelOpacity(i)"
+              [style.--i]="i"
               [attr.aria-hidden]="i !== activeIndex()"
             >
               <p class="mb-3 font-serif text-sm font-bold tracking-widest text-mayfair-teal">
