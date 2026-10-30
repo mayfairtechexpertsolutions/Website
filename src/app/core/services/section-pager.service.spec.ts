@@ -20,7 +20,8 @@ describe('SectionPagerService', () => {
     page.innerHTML = `<router-outlet></router-outlet><div>${sectionTops.map(() => '<section></section>').join('')}</div>`;
     document.body.append(page);
     page.querySelectorAll('section').forEach((section, i) => {
-      Object.defineProperty(section, 'offsetTop', { value: sectionTops[i] });
+      const height = (sectionTops[i + 1] ?? sectionTops[i] + 700) - sectionTops[i];
+      Object.defineProperties(section, { offsetTop: { value: sectionTops[i] }, offsetHeight: { value: height } });
     });
   };
 
@@ -61,17 +62,35 @@ describe('SectionPagerService', () => {
     expect(scrollTo).toHaveBeenLastCalledWith({ top: 0, behavior: 'instant' });
   });
 
-  it('glides one screen at a time through a section taller than the screen, then on to the next', async () => {
+  it("stops at a tall section's top, then where its end fills the screen, then the next section", async () => {
+    buildPage([0, 1500, 2200]); // the first section is 1500px tall: its end fills the screen at 1500 - 900
+    TestBed.inject(SectionPagerService);
+
+    wheel(100);
+    expect(scrollTo).toHaveBeenLastCalledWith({ top: 600, behavior: 'instant' });
+
+    setScrollY(600);
+    await nextGesture();
+    wheel(100);
+    expect(scrollTo).toHaveBeenLastCalledWith({ top: 1500 - NAVBAR_OFFSET, behavior: 'instant' });
+
+    setScrollY(1500 - NAVBAR_OFFSET);
+    await nextGesture();
+    wheel(-100);
+    expect(scrollTo).toHaveBeenLastCalledWith({ top: 600, behavior: 'instant' });
+  });
+
+  it('glides one screen at a time through a section more than two screens tall', async () => {
     buildPage([0, 3000]);
     TestBed.inject(SectionPagerService);
 
     expect(wheel(100).defaultPrevented).toBe(true);
     expect(scrollTo).toHaveBeenLastCalledWith({ top: (900 - NAVBAR_OFFSET) * 0.85, behavior: 'instant' });
 
-    setScrollY(2500);
+    setScrollY(1900);
     await nextGesture();
-    expect(wheel(100).defaultPrevented).toBe(true);
-    expect(scrollTo).toHaveBeenLastCalledWith({ top: 3000 - NAVBAR_OFFSET, behavior: 'instant' });
+    wheel(100);
+    expect(scrollTo).toHaveBeenLastCalledWith({ top: 3000 - 900, behavior: 'instant' });
   });
 
   it('leaves the wheel alone past the last stop', () => {
