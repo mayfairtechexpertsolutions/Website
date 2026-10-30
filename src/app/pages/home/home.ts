@@ -14,6 +14,8 @@ import { StatsTicketsComponent } from '../../shared/components/stats-tickets/sta
 import { MobileCtaBarComponent } from '../../shared/components/mobile-cta-bar/mobile-cta-bar';
 import { SavingsCalculatorComponent } from './savings-calculator/savings-calculator';
 import { ContactFormComponent } from './contact-form/contact-form';
+import { SectionHeaderComponent } from '../../shared/components/section-header/section-header';
+import { BILLING_MODES, MATERIALS, ROADMAP_STEPS, TECH_STACK } from './home.data';
 import { SeoService } from '../../core/seo/seo.service';
 
 @Component({
@@ -33,6 +35,7 @@ import { SeoService } from '../../core/seo/seo.service';
     ModelsAccordionComponent,
     PointerParallaxDirective,
     ContactFormComponent,
+    SectionHeaderComponent,
   ],
   templateUrl: './home.html',
 })
@@ -40,6 +43,10 @@ export class HomeComponent {
   protected readonly CARD_STAGGER_MS = 150;
   protected readonly stats = STATS;
   protected readonly engagementModels = ENGAGEMENT_MODELS;
+  protected readonly billingModes = BILLING_MODES;
+  protected readonly materials = MATERIALS;
+  protected readonly roadmapSteps = ROADMAP_STEPS;
+  protected readonly techStack = TECH_STACK;
 
   constructor() {
     inject(SeoService).set({

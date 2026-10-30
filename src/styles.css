@@ -12,6 +12,14 @@
   --font-sans: "Inter", sans-serif;
 }
 
+/* One visible keyboard focus style everywhere (mouse clicks don't trigger :focus-visible). Inputs use their own ring. */
+@layer base {
+  :focus-visible {
+    outline: 2px solid var(--color-mayfair-teal);
+    outline-offset: 3px;
+  }
+}
+
 html {
   scroll-behavior: smooth;
   color-scheme: light dark;
@@ -30,6 +38,52 @@ h3,
 
 .gradient-bg {
   background: linear-gradient(135deg, #003b5c 0%, #002236 100%);
+}
+
+/* Dotted teal texture behind the inner-page heroes (<app-page-hero>) */
+.hero-dots {
+  background-image: radial-gradient(var(--color-mayfair-teal) 0.5px, transparent 0.5px);
+  background-size: 30px 30px;
+}
+
+/*
+ * Shared buttons, cards and form fields. Every CTA is .btn plus one colour variant (.btn-lg for hero/banner size);
+ * layout utilities (w-full, hidden, sm:inline-flex) still override these because utilities sit in a later layer.
+ */
+@layer components {
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 rounded-xl px-6 py-3 text-center font-bold transition-all duration-300 hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:translate-y-0;
+  }
+  .btn-lg {
+    @apply px-8 py-4 text-lg;
+  }
+  /* Bright teal: the main action on any background. Text stays navy (white on teal fails contrast). */
+  .btn-primary {
+    @apply bg-mayfair-teal text-mayfair-navy shadow-lg hover:bg-mayfair-teal-light hover:shadow-xl hover:shadow-mayfair-teal/30;
+  }
+  /* Navy on light surfaces; becomes teal in dark mode, where navy would vanish into the page. */
+  .btn-navy {
+    @apply bg-mayfair-navy text-white shadow-lg hover:bg-mayfair-teal hover:text-mayfair-navy hover:shadow-xl hover:shadow-mayfair-teal/30 dark:bg-mayfair-teal dark:text-mayfair-navy dark:hover:bg-mayfair-teal-light;
+  }
+  /* Secondary action on navy/dark surfaces. */
+  .btn-outline {
+    @apply border border-white/20 text-white hover:border-white/40 hover:bg-white/10;
+  }
+
+  /* Light content card; add .card-hover for the shared lift + teal glow. */
+  .card {
+    @apply rounded-2xl border border-slate-200 bg-white dark:border-slate-700 dark:bg-slate-900;
+  }
+
+  .form-label {
+    @apply mb-2 block text-sm font-bold tracking-tight text-mayfair-navy uppercase dark:text-slate-200;
+  }
+  .form-error {
+    @apply mt-2 text-sm text-red-600 dark:text-red-400;
+  }
+  .form-input {
+    @apply w-full rounded-xl border border-slate-200 bg-white p-3 outline-none transition focus:ring-2 focus:ring-mayfair-teal dark:border-slate-700 dark:bg-slate-800 dark:text-white dark:placeholder-slate-500;
+  }
 }
 
 /* Scroll-reveal: elements fade/slide in once appReveal marks them .active */
@@ -148,7 +202,8 @@ h3,
     animation: none;
   }
   .globe-tilt,
-  .card-hover:hover {
+  .card-hover:hover,
+  .btn:hover {
     transform: none;
   }
 }
@@ -175,7 +230,7 @@ h3,
   width: 20px;
   height: 20px;
   border-radius: 9999px;
-  background: var(--color-slate-50);
+  background: var(--color-white);
 }
 .ticket::before {
   left: -10px;

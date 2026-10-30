@@ -15,7 +15,7 @@ import { Product } from '../../../core/products/product.model';
       >
         @if (product().isNew) {
           <span
-            class="absolute top-6 right-6 rounded-full bg-mayfair-teal/10 px-3 py-1 text-[10px] font-bold tracking-widest text-mayfair-teal uppercase"
+            class="absolute top-6 right-6 rounded-full bg-mayfair-teal/10 px-3 py-1 text-xs font-bold tracking-widest text-mayfair-teal uppercase"
             >{{ 'products_new_badge' | translate }}</span
           >
         }

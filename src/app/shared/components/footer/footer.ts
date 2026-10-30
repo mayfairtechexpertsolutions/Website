@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { TranslatePipe } from '../../../core/i18n/translate.pipe';
 import { PRODUCTS } from '../../../core/products/products.data';
+import { WHATSAPP_URL } from '../../../core/contact/contact.data';
 
 @Component({
   selector: 'app-footer',
@@ -11,4 +12,5 @@ import { PRODUCTS } from '../../../core/products/products.data';
 })
 export class FooterComponent {
   protected readonly products = PRODUCTS;
+  protected readonly whatsappUrl = WHATSAPP_URL;
 }

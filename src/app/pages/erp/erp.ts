@@ -2,11 +2,12 @@ import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/cor
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { RevealDirective } from '../../shared/directives/reveal.directive';
+import { PageHeroComponent } from '../../shared/components/page-hero/page-hero';
+import { SectionHeaderComponent } from '../../shared/components/section-header/section-header';
 import { TranslatePipe } from '../../core/i18n/translate.pipe';
 import { TranslationService } from '../../core/i18n/translation.service';
 import { SeoService } from '../../core/seo/seo.service';
-
-const WHATSAPP_NUMBER = '23059046191';
+import { WHATSAPP_URL } from '../../core/contact/contact.data';
 
 type FeatureKey = { title: string; desc: string; icon: string };
 
@@ -53,6 +54,33 @@ const TRUST: FeatureKey[] = [
   { icon: 'fa-lock', title: 'erp_trust4_title', desc: 'erp_trust4_desc' },
 ];
 
+const HERO_STATS: { value: string; label: string }[] = [
+  { value: 'erp_hero_stat1', label: 'erp_hero_stat1_label' },
+  { value: 'erp_hero_stat2', label: 'erp_hero_stat2_label' },
+  { value: 'erp_hero_stat3', label: 'erp_hero_stat3_label' },
+];
+
+/** A plan with a badgeKey is the highlighted ("most popular") one. */
+type Plan = {
+  nameKey: string;
+  taglineKey: string;
+  priceKey: string;
+  usersKey: string;
+  featureKeys: string[];
+  badgeKey?: string;
+};
+
+const planKeys = (id: string, badgeKey?: string): Plan => ({
+  nameKey: `erp_plan_${id}_name`,
+  taglineKey: `erp_plan_${id}_tagline`,
+  priceKey: `erp_plan_${id}_price`,
+  usersKey: `erp_plan_${id}_users`,
+  featureKeys: [1, 2, 3, 4, 5].map((n) => `erp_plan_${id}_li${n}`),
+  badgeKey,
+});
+
+const PLANS: Plan[] = [planKeys('core'), planKeys('growth', 'erp_plan_growth_badge'), planKeys('pro')];
+
 type FaqEntry = { q: string; a: string };
 
 const FAQ: FaqEntry[] = [
@@ -67,13 +95,15 @@ const FAQ: FaqEntry[] = [
 @Component({
   selector: 'app-erp',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [RouterLink, ReactiveFormsModule, RevealDirective, TranslatePipe],
+  imports: [RouterLink, ReactiveFormsModule, RevealDirective, TranslatePipe, PageHeroComponent, SectionHeaderComponent],
   templateUrl: './erp.html',
 })
 export class ErpComponent {
   protected readonly i18n = inject(TranslationService);
   private readonly fb = inject(FormBuilder);
 
+  protected readonly heroStats = HERO_STATS;
+  protected readonly plans = PLANS;
   protected readonly previewShots = PREVIEW_SHOTS;
   protected readonly painPoints = PAIN_POINTS;
   protected readonly features = FEATURES;
@@ -116,8 +146,17 @@ export class ErpComponent {
     });
   }
 
+  /** A field shows its error once the visitor has left it or tried to submit. */
+  protected showError(control: keyof typeof this.form.controls): boolean {
+    const c = this.form.controls[control];
+    return c.invalid && c.touched;
+  }
+
   protected onSubmit(): void {
-    if (this.form.invalid) return;
+    if (this.form.invalid) {
+      this.form.markAllAsTouched();
+      return;
+    }
     const { name, email, company, staff_count, message } = this.form.getRawValue();
     const text = [
       'New MayfairTech ERP Trial Request',
@@ -128,7 +167,7 @@ export class ErpComponent {
       `Number of Staff: ${staff_count || '—'}`,
       `What they're hoping to solve: ${message}`,
     ].join('\n');
-    const url = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(text)}`;
+    const url = `${WHATSAPP_URL}?text=${encodeURIComponent(text)}`;
     try {
       window.open(url, '_blank', 'noopener');
       this.submitState.set('success');

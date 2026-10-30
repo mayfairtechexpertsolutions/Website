@@ -3,6 +3,7 @@ import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { TranslatePipe } from '../../../core/i18n/translate.pipe';
 import { TranslationService } from '../../../core/i18n/translation.service';
+import { SectionHeaderComponent } from '../../../shared/components/section-header/section-header';
 
 const MONTHLY_RATE_PER_USER = 50;
 const MONTHS = 36;
@@ -10,7 +11,7 @@ const MONTHS = 36;
 @Component({
   selector: 'app-savings-calculator',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [FormsModule, RouterLink, TranslatePipe],
+  imports: [FormsModule, RouterLink, TranslatePipe, SectionHeaderComponent],
   templateUrl: './savings-calculator.html',
 })
 export class SavingsCalculatorComponent {

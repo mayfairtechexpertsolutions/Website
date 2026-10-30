@@ -19,7 +19,7 @@ Marketing website for MayfairTech Expert Solutions, built as an **Angular 22 app
 | Styling | Tailwind CSS v4 (`@tailwindcss/postcss`), theme tokens in `src/styles.css`'s `@theme` block |
 | State | Angular signals (`signal`/`computed`) throughout; `OnPush` change detection on every component |
 | i18n | Custom `TranslationService` (signals-based), **not** `@angular/localize` — see i18n section |
-| Icons | Font Awesome 6.0 via CDN `<link>` in `src/index.html` (unchanged from the old site) |
+| Icons | Font Awesome 6.5.2 via CDN `<link>` in `src/index.html` (with SRI hash). Icons added after 6.0 (e.g. `fa-shield-halved`) need ≥6.1 — check an icon exists in this version before using it |
 | Fonts | Google Fonts — Playfair Display, Inter (preconnect + stylesheet in `src/index.html`) |
 | Forms | No backend — both forms build a `wa.me` deep link and open it in a new tab, pre-filled with the visitor's answers, so the visitor sends it via WhatsApp Business |
 | CI/CD | GitHub Actions (`.github/workflows/deploy.yml`) — Node 24, `npm ci`, `ng build --base-href`, flatten script, then `upload-pages-artifact` + `deploy-pages` on `dist/mayfairtech-website/browser/` |
@@ -45,9 +45,10 @@ Marketing website for MayfairTech Expert Solutions, built as an **Angular 22 app
 │       │   └── services/       # mobile-menu.service.ts, reveal-observer.service.ts
 │       ├── shared/
 │       │   ├── components/     # navbar, mobile-menu, language-switcher, footer, products-grid,
-│       │   │                   # product-card, globe, starfield, mobile-cta-bar
+│       │   │                   # product-card, globe, starfield, mobile-cta-bar,
+│       │   │                   # section-header, page-hero
 │       │   └── directives/     # reveal.directive.ts (appReveal — scroll-in animation)
-│       └── pages/               # home, products, erp, privacy, terms — one folder per route
+│       └── pages/               # home, products, erp, careers, privacy, terms — one folder per route
 ├── public/                      # Static assets copied verbatim into the build output
 │   ├── media/                   # logo.png, only_logo.png, social-preview.png
 │   ├── favicon.ico, robots.txt, sitemap.xml
@@ -64,7 +65,7 @@ The company sells two things through this site: **consulting/partnership service
 
 ## Routing — literal `.html` URLs are intentional
 
-Routes in `app.routes.ts` use literal path strings that include `.html`, e.g. `{ path: 'products.html', component: ProductsComponent }`. This is **not** a mistake — Angular Router path segments are plain strings, a dot has no special meaning, and this preserves the site's existing indexed URLs (`/`, `/products.html`, `/erp.html`, `/privacy.html`, `/terms.html`) exactly, so nothing in `sitemap.xml`, external backlinks, or bookmarks breaks.
+Routes in `app.routes.ts` use literal path strings that include `.html`, e.g. `{ path: 'products.html', component: ProductsComponent }`. This is **not** a mistake — Angular Router path segments are plain strings, a dot has no special meaning, and this preserves the site's existing indexed URLs (`/`, `/products.html`, `/erp.html`, `/careers.html`, `/privacy.html`, `/terms.html`) exactly, so nothing in `sitemap.xml`, external backlinks, or bookmarks breaks.
 
 Angular's static prerenderer, however, treats every route path as a directory, so a route named `products.html` builds to `dist/.../browser/products.html/index.html` (a **directory**), not a literal file. `scripts/flatten-html-routes.mjs` runs after every build and rewrites each `<name>.html/index.html` into a flat `<name>.html` file. This is required for GitHub Pages (a plain static file server) to resolve `/products.html` correctly — run it any time you build for deployment (the CI pipeline already does this; see `.github/workflows/deploy.yml`).
 
@@ -159,10 +160,16 @@ export const PRODUCTS: Product[] = [
 - **`GlobeComponent`** (`shared/components/globe/`): hand-rolled SVG 3D globe (no library), interactive. Split by responsibility: `globe.data.ts` (geometry, nodes/edges, tuning constants, palette), `globe.math.ts` (pure projection / drag / inertia maths), `globe.renderer.ts` (`GlobeRenderer` owns every SVG element and repaints for a rotation + focused node), `globe.ts` (lifecycle, rAF loop, pointer input). Drag to spin (Pointer Events, `touch-action: pan-y`, release flings then eases back to `AUTO_SPIN_SPEED`); hover a node to light its constellation edges and slow the spin; click toggles a label card (`globe_node_*` keys, all 4 languages). Guarded behind `isPlatformBrowser`, pauses via `IntersectionObserver`, cancels rAF and removes listeners in `ngOnDestroy`. Under `prefers-reduced-motion` there is no auto-spin or momentum, but drag and hover still repaint on demand. The globe is decorative (`aria-hidden`), only shown at `lg`+. To add a node, add it to `GLOBE_NODES`/`GLOBE_EDGES` and a `globe_node_<name>` key in all 4 languages.
 - **`StarfieldComponent`** (`shared/components/starfield/`): canvas sky behind the home hero (first child of the `<header>`). `starfield.math.ts` holds the seeded star generator (3 parallax layers), twinkle, `textSafeAlpha` (dims stars on the headline side so text contrast holds) and shooting-star timing. Parallax follows the pointer over the parent element; DPR capped at 2; paused offscreen; one static frame under `prefers-reduced-motion`.
 - **`SavingsCalculatorComponent`**: `computed()` over a `staffCount` signal and `TranslationService.currentLang()` — recomputes automatically on both input and language change, no manual re-invocation wiring needed.
-- **`ContactFormComponent`** (home) / inline trial form in `ErpComponent`: Angular reactive forms (`FormBuilder`). On submit, builds a plain-text summary of the answers and opens `https://wa.me/<MayfairTech WhatsApp Business number>?text=<encoded summary>` in a new tab — the visitor still has to hit Send inside WhatsApp, since there is no backend to deliver it silently. Tracks `idle | success | error` in a signal (`success` means the link opened, not that the visitor sent it), swaps in a success card via `@if`.
+- **`ContactFormComponent`** (home) / inline trial form in `ErpComponent`: Angular reactive forms (`FormBuilder`). On submit, builds a plain-text summary of the answers and opens `https://wa.me/<MayfairTech WhatsApp Business number>?text=<encoded summary>` in a new tab — the visitor still has to hit Send inside WhatsApp, since there is no backend to deliver it silently. Tracks `idle | success | error` in a signal (`success` means the link opened, not that the visitor sent it), swaps in a success card via `@if`. The submit button is never disabled: each required field shows an inline `.form-error` message (with `aria-invalid`/`aria-describedby`) once it's been left or a submit is attempted (`markAllAsTouched`).
 - **Motion/effects (Phase 1)**: `ScrollStateService` (`core/services/`) exposes a `scrolled` signal — the navbar shrinks and gains a stronger shadow when it's true. `PointerParallaxDirective` (`appPointerParallax`, on the home hero) writes `--px`/`--py` (-1..1) CSS vars; `.globe-tilt` in `styles.css` turns them into a subtle (±4°) 3D tilt on the globe, with a `.globe-glow` halo behind it. `SectionDividerComponent` (`<app-section-divider />`) is the glowing line + diamond between sections. `.text-gradient-hero` (hero headline gradient) and `.btn-glow` (pulsing CTA) are plain CSS classes. `appReveal` accepts `[revealDelay]` (ms) to stagger sibling cards. Everything honours `prefers-reduced-motion` (CSS media query, and the directive skips its listener).
 - **Motion/effects (Phase 2)**: the home `#impact` section renders `StatsTicketsComponent` from the `STATS` registry (`core/stats/stats.data.ts`) — to change the figures, edit that array and the `stats_*_label` keys (all 4 languages). `CountUpDirective` (`[appCountUp]`) counts a number up when it scrolls into view; prerendered HTML and reduced-motion visitors keep the final value. `.card-hover` (lift + teal border/glow) is the shared hover style for the "Our Models" cards.
+- **Tech stack (`#stack`, home)**: the layered "backbone" section after `#about` (Frontend & Mobile → Backend & APIs → Data → Cloud & Infrastructure), rendered from `TECH_STACK` in `pages/home/home.data.ts`. Each layer has an icon, `stack_l<N>_name`/`_why` keys and a list of items; product names (Angular, PostgreSQL…) are shown as-is, generic items set `translate: true` and use a `stack_item_*` key. Tech is shown as text chips, not vendor logos.
 - **`ModelsAccordionComponent`** (`<app-models-accordion>`): the home `#models` section. Driven by `ENGAGEMENT_MODELS` (`core/models/engagement-models.data.ts`, keys `model<N>_*`); one panel open at a time (click, keyboard focus or hover), horizontal at `lg`, stacked below. Buttons carry `aria-expanded`/`aria-controls`.
+- **Shared UI building blocks** — use these instead of re-typing class lists:
+  - `<app-section-header badgeKey titleKey [subtitleKey] [align]="'center'|'left'" [tone]="'light'|'dark'">` (`shared/components/section-header/`): the badge + h2 + subtitle that opens every content section. Inputs are i18n keys; the title renders as HTML. `tone="dark"` on navy/gradient surfaces.
+  - `<app-page-hero [badge] [title] [subtitle] [size]="'lg'|'md'">` (`shared/components/page-hero/`): the dotted navy header on every page except home. Inputs are already-translated strings (`'key' | translate`, or plain English on the legal pages); extra content (CTAs, stats) is projected inside.
+  - Buttons (`src/styles.css`, `@layer components`): `.btn` + one of `.btn-primary` (teal, the main action anywhere), `.btn-navy` (navy on light surfaces, teal in dark mode), `.btn-outline` (secondary on dark surfaces); add `.btn-lg` for hero/banner size. Layout utilities (`w-full`, `hidden sm:inline-flex`) still override them.
+  - Cards: `.card` (white/slate-900 surface, border, radius) + `.card-hover` (shared lift and teal glow). Forms: `.form-label` / `.form-input`, with `for`/`id` linking each label to its control.
 - **`RevealDirective`** (`appReveal`): replaces the old `.reveal` class + manual `IntersectionObserver` — a single shared observer lives in `RevealObserverService` (`providedIn: 'root'`), and the directive registers/unregisters its host element in `ngOnInit`/`ngOnDestroy`.
 
 ---
@@ -183,7 +190,7 @@ jobs:
   deploy:  # actions/deploy-pages (environment: github-pages)
 ```
 
-**To deploy:** commit and push to `main`. GitHub Actions installs deps, builds + prerenders all 5 routes, flattens the `.html` route directories into literal files, and deploys the output to GitHub Pages.
+**To deploy:** commit and push to `main`. GitHub Actions installs deps, builds + prerenders all 6 routes, flattens the `.html` route directories into literal files, and deploys the output to GitHub Pages.
 
 ---
 
@@ -198,7 +205,7 @@ jobs:
 ## Common Tasks
 
 ### Add a new section (home page)
-1. Add a `<section>` block to `src/app/pages/home/home.html` with an anchor `id`.
+1. Add a `<section>` block to `src/app/pages/home/home.html` with an anchor `id`, opening with `<app-section-header>`.
 2. Add `appReveal` to the section wrapper for the scroll-in animation.
 3. Add translation keys to all 4 language objects in `translations.ts`, reference via `| translate`.
 4. If it needs its own nav link, add to `MAIN_NAV_LINKS` in `nav-link.model.ts`.
@@ -206,8 +213,11 @@ jobs:
 ### Add a new product
 See "Products Architecture" above.
 
+### Edit the Privacy or Terms pages
+Both are translated and data-driven: the copy lives in `privacy_*` / `terms_*` keys (all 4 languages), and the section structure in `pages/privacy/privacy.data.ts` / `pages/terms/terms.data.ts` (`PARAGRAPHS_PER_SECTION` sets how many `terms_s<N>_p<K>` paragraphs each clause has). Non-English visitors see a `legal_translation_note` banner saying the English version prevails. The Chinese and French legal translations were machine-assisted, so have a native speaker (ideally counsel) review any change.
+
 ### Add a new job listing
-Add a job card block in `home.html`'s `#careers` section, plus `job6_title`, `job6_tag`, `job6_desc` (etc.) keys to all 4 languages.
+Open roles live on their own page, `careers.html`. Extend the range in `JOBS` (`pages/careers/careers.data.ts`) and add `job6_title`, `job6_tag`, `job6_desc` (etc.) keys to all 4 languages; each card gets an "Apply" mailto with the role in the subject automatically. (Home's billing modes, roadmap steps and "materials" registries live in `pages/home/home.data.ts`.)
 
 ### Add a new language
 1. Add a new `Lang` union member and language object to `translations.ts`.
@@ -215,7 +225,7 @@ Add a job card block in `home.html`'s `#careers` section, plus `job6_title`, `jo
 3. No other changes needed — `TranslationService` and the `translate` pipe are language-count-agnostic.
 
 ### Update the WhatsApp Business number
-Change the `WHATSAPP_NUMBER` constant in both `pages/home/contact-form/contact-form.ts` and `pages/erp/erp.ts` (digits only, international format, no `+` or spaces).
+Change `WHATSAPP_NUMBER` in `core/contact/contact.data.ts` (digits only, international format, no `+` or spaces). The contact form, ERP trial form, contact-section direct link and footer icon all read it from there.
 
 ### Local development
 Run `./run_angular.sh` — it ensures Node ≥22.22.3 (via nvm, falling back to an error message if nvm isn't available), installs `node_modules` if missing, starts `ng serve` on port 4200, and opens your browser. For a one-off manual run: `npm ci && npx ng serve`.

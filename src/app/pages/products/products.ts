@@ -2,13 +2,14 @@ import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { RevealDirective } from '../../shared/directives/reveal.directive';
 import { ProductsGridComponent } from '../../shared/components/products-grid/products-grid';
+import { PageHeroComponent } from '../../shared/components/page-hero/page-hero';
 import { TranslatePipe } from '../../core/i18n/translate.pipe';
 import { SeoService } from '../../core/seo/seo.service';
 
 @Component({
   selector: 'app-products',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [RouterLink, RevealDirective, ProductsGridComponent, TranslatePipe],
+  imports: [RouterLink, RevealDirective, ProductsGridComponent, TranslatePipe, PageHeroComponent],
   templateUrl: './products.html',
 })
 export class ProductsComponent {

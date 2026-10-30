@@ -18,7 +18,7 @@
       </h3>
       @if (i === activeIndex()) {
         <div [id]="'model-panel-' + i" class="animate-fade-in mt-4">
-          <span class="mb-4 inline-block rounded-full bg-mayfair-teal/15 px-3 py-1 text-[10px] font-bold tracking-widest text-mayfair-teal uppercase">
+          <span class="mb-4 inline-block rounded-full bg-mayfair-teal/15 px-3 py-1 text-xs font-bold tracking-widest text-mayfair-teal uppercase">
             {{ model.badgeKey | translate }}
           </span>
           <p class="mb-4 text-sm leading-relaxed text-slate-200">{{ model.descKey | translate }}</p>

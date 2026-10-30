@@ -30,18 +30,34 @@
         </a>
       }
 
-      <div class="group relative">
-        <button type="button" class="flex items-center gap-1.5 py-1 transition hover:text-mayfair-teal">
+      <!-- Opens on hover for mouse users, and on click/tap or keyboard (Enter/Space, then Tab through) for everyone else -->
+      <div #productsMenu class="group relative" (focusout)="onProductsFocusOut($event)">
+        <button
+          type="button"
+          (click)="productsOpen.set(!productsOpen())"
+          class="flex items-center gap-1.5 py-1 transition hover:text-mayfair-teal"
+          aria-haspopup="true"
+          aria-controls="products-menu"
+          [attr.aria-expanded]="productsOpen()"
+        >
           {{ 'nav_products' | translate }}
-          <i class="fas fa-chevron-down text-[10px] transition-transform group-hover:rotate-180"></i>
+          <i
+            class="fas fa-chevron-down text-xs transition-transform group-hover:rotate-180"
+            [class.rotate-180]="productsOpen()"
+            aria-hidden="true"
+          ></i>
         </button>
         <div
-          class="invisible absolute left-1/2 top-full z-50 -translate-x-1/2 pt-3 opacity-0 transition-all duration-200 group-hover:visible group-hover:opacity-100"
+          id="products-menu"
+          class="absolute left-1/2 top-full z-50 -translate-x-1/2 pt-3 transition-all duration-200 group-hover:visible group-hover:opacity-100"
+          [class.invisible]="!productsOpen()"
+          [class.opacity-0]="!productsOpen()"
         >
           <div class="min-w-[260px] rounded-2xl border border-slate-100 bg-white p-2 shadow-2xl dark:border-slate-700 dark:bg-mayfair-dark">
             @for (p of products; track p.slug) {
               <a
                 [routerLink]="p.href"
+                (click)="productsOpen.set(false)"
                 class="flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-semibold text-mayfair-navy transition hover:bg-slate-50 dark:text-slate-100 dark:hover:bg-white/5"
               >
                 <i class="fas w-4 text-mayfair-teal" [class]="p.icon"></i> {{ p.nameKey | translate }}
@@ -49,6 +65,7 @@
             }
             <a
               routerLink="/products.html"
+              (click)="productsOpen.set(false)"
               class="mt-1 flex items-center gap-3 rounded-xl border-t border-slate-100 px-4 py-3 pt-3 text-sm font-bold text-mayfair-teal transition hover:bg-slate-50 dark:border-slate-700 dark:hover:bg-white/5"
             >
               <i class="fas fa-th-large w-4"></i> {{ 'products_view_all' | translate }}
@@ -66,7 +83,7 @@
       <a
         [routerLink]="ctaPath()"
         [fragment]="ctaFragment()"
-        class="btn-glow hidden rounded-xl bg-mayfair-navy px-6 py-2.5 font-bold text-white transition-all hover:bg-mayfair-teal sm:block dark:bg-mayfair-teal dark:hover:bg-white dark:hover:text-mayfair-navy dark:text-mayfair-navy hover:text-mayfair-navy"
+        class="btn btn-navy btn-glow hidden py-2.5 sm:inline-flex"
       >
         {{ ctaLabelKey() | translate }}
       </a>
@@ -74,7 +91,7 @@
       <button
         type="button"
         (click)="mobileMenu.open()"
-        class="text-2xl text-mayfair-navy focus:outline-none md:hidden dark:text-slate-100"
+        class="text-2xl text-mayfair-navy md:hidden dark:text-slate-100"
         aria-label="Open navigation menu"
         [attr.aria-expanded]="mobileMenu.isOpen()"
         aria-controls="mobileMenu"

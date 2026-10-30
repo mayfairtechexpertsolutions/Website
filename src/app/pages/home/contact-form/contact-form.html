@@ -7,21 +7,47 @@
     <p class="mx-auto mb-8 max-w-md text-lg leading-relaxed text-slate-600 dark:text-slate-300">{{ 'form_footer' | translate }}</p>
   </div>
 } @else {
-  <form [formGroup]="form" (ngSubmit)="onSubmit()" class="space-y-6 rounded-[2.5rem] bg-white p-10 dark:bg-slate-900">
+  <form [formGroup]="form" (ngSubmit)="onSubmit()" novalidate class="space-y-6 rounded-[2.5rem] bg-white p-10 dark:bg-slate-900">
     <div class="grid gap-6 md:grid-cols-2">
       <div>
-        <label class="mb-2 block text-sm font-bold tracking-tight text-mayfair-navy uppercase dark:text-slate-200">{{ 'form_name' | translate }}</label>
-        <input type="text" formControlName="name" class="w-full rounded-xl border border-slate-200 p-3 outline-none transition focus:ring-2 focus:ring-mayfair-teal dark:border-slate-700 dark:bg-slate-800 dark:text-white dark:placeholder-slate-500" placeholder="John Doe" />
+        <label for="contact-name" class="form-label">{{ 'form_name' | translate }}</label>
+        <input
+          type="text"
+          id="contact-name"
+          formControlName="name"
+          autocomplete="name"
+          class="form-input"
+          [attr.placeholder]="'form_ph_name' | translate"
+          [attr.aria-invalid]="showError('name')"
+          [attr.aria-describedby]="showError('name') ? 'contact-name-error' : null"
+        />
+        @if (showError('name')) {
+          <p id="contact-name-error" class="form-error">{{ 'form_err_required' | translate }}</p>
+        }
       </div>
       <div>
-        <label class="mb-2 block text-sm font-bold tracking-tight text-mayfair-navy uppercase dark:text-slate-200">{{ 'form_email' | translate }}</label>
-        <input type="email" formControlName="email" class="w-full rounded-xl border border-slate-200 p-3 outline-none transition focus:ring-2 focus:ring-mayfair-teal dark:border-slate-700 dark:bg-slate-800 dark:text-white dark:placeholder-slate-500" placeholder="john@company.com" />
+        <label for="contact-email" class="form-label">{{ 'form_email' | translate }}</label>
+        <input
+          type="email"
+          id="contact-email"
+          formControlName="email"
+          autocomplete="email"
+          class="form-input"
+          [attr.placeholder]="'form_ph_email' | translate"
+          [attr.aria-invalid]="showError('email')"
+          [attr.aria-describedby]="showError('email') ? 'contact-email-error' : null"
+        />
+        @if (showError('email')) {
+          <p id="contact-email-error" class="form-error">
+            {{ (form.controls.email.hasError('required') ? 'form_err_required' : 'form_err_email') | translate }}
+          </p>
+        }
       </div>
     </div>
 
     <div>
-      <label class="mb-2 block text-sm font-bold tracking-tight text-mayfair-navy uppercase dark:text-slate-200">{{ 'form_model' | translate }}</label>
-      <select formControlName="model" class="w-full rounded-xl border border-slate-200 bg-white p-3 text-slate-600 outline-none transition focus:ring-2 focus:ring-mayfair-teal dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200">
+      <label for="contact-model" class="form-label">{{ 'form_model' | translate }}</label>
+      <select id="contact-model" formControlName="model" class="form-input text-slate-600 dark:text-slate-200">
         <option value="dedicated">{{ 'model_dedicated' | translate }}</option>
         <option value="shared">{{ 'model_shared' | translate }}</option>
         <option value="fixed">{{ 'model_fixed' | translate }}</option>
@@ -31,8 +57,19 @@
     </div>
 
     <div>
-      <label class="mb-2 block text-sm font-bold tracking-tight text-mayfair-navy uppercase dark:text-slate-200">{{ 'form_message' | translate }}</label>
-      <textarea rows="4" formControlName="message" class="w-full rounded-xl border border-slate-200 p-3 outline-none transition focus:ring-2 focus:ring-mayfair-teal dark:border-slate-700 dark:bg-slate-800 dark:text-white dark:placeholder-slate-500" [attr.placeholder]="'form_placeholder' | translate"></textarea>
+      <label for="contact-message" class="form-label">{{ 'form_message' | translate }}</label>
+      <textarea
+        rows="4"
+        id="contact-message"
+        formControlName="message"
+        class="form-input"
+        [attr.placeholder]="'form_placeholder' | translate"
+        [attr.aria-invalid]="showError('message')"
+        [attr.aria-describedby]="showError('message') ? 'contact-message-error' : null"
+      ></textarea>
+      @if (showError('message')) {
+        <p id="contact-message-error" class="form-error">{{ 'form_err_required' | translate }}</p>
+      }
     </div>
 
     <div class="flex items-center gap-3 rounded-xl border border-slate-100 bg-slate-50 px-4 py-3 dark:border-slate-700 dark:bg-white/5">
@@ -41,17 +78,23 @@
     </div>
 
     @if (submitState() === 'error') {
-      <p class="text-center text-sm font-semibold text-red-500">{{ 'form_error_message' | translate }}</p>
+      <p class="form-error text-center font-semibold">{{ 'form_error_message' | translate }}</p>
     }
 
-    <button
-      type="submit"
-      [disabled]="form.invalid"
-      class="flex w-full transform items-center justify-center gap-3 rounded-xl bg-mayfair-navy py-4 text-lg font-bold text-white transition-all hover:-translate-y-1 hover:bg-mayfair-teal hover:shadow-lg disabled:cursor-not-allowed disabled:opacity-60 dark:bg-mayfair-teal dark:hover:bg-white dark:hover:text-mayfair-navy dark:text-mayfair-navy hover:text-mayfair-navy"
-    >
+    <button type="submit" class="btn btn-lg btn-navy w-full gap-3">
       <i class="fab fa-whatsapp text-xl"></i>
       {{ 'form_btn' | translate }}
     </button>
-    <p class="text-center text-xs text-slate-400">{{ 'form_footer' | translate }}</p>
+    <p class="text-center text-xs text-slate-500 dark:text-slate-400">{{ 'form_footer' | translate }}</p>
   </form>
 }
+
+<div class="mt-8 flex flex-col items-center justify-center gap-3 text-sm text-slate-300 sm:flex-row sm:gap-6">
+  <span>{{ 'contact_direct_title' | translate }}</span>
+  <a [href]="whatsappChatUrl" target="_blank" rel="noopener" class="inline-flex items-center gap-2 font-bold text-mayfair-teal hover:underline">
+    <i class="fab fa-whatsapp" aria-hidden="true"></i>{{ 'contact_direct_whatsapp' | translate }}
+  </a>
+  <a href="mailto:mayfairtechexpertsolutions@gmail.com" class="inline-flex items-center gap-2 font-bold text-mayfair-teal hover:underline">
+    <i class="fas fa-envelope" aria-hidden="true"></i>{{ 'contact_direct_email' | translate }}
+  </a>
+</div>

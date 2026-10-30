@@ -16,7 +16,7 @@ import { TranslatePipe } from '../../../core/i18n/translate.pipe';
       <a
         routerLink="/"
         fragment="contact"
-        class="block w-full rounded-xl bg-mayfair-teal py-3 text-center font-bold text-mayfair-navy shadow-lg"
+        class="btn btn-primary w-full"
       >
         {{ 'apply_btn' | translate }}
       </a>

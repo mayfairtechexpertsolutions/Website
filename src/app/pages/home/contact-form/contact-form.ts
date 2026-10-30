@@ -1,8 +1,7 @@
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { ReactiveFormsModule, Validators, FormBuilder } from '@angular/forms';
 import { TranslatePipe } from '../../../core/i18n/translate.pipe';
-
-const WHATSAPP_NUMBER = '23059046191';
+import { WHATSAPP_URL } from '../../../core/contact/contact.data';
 
 const ENGAGEMENT_MODEL_LABELS: Record<string, string> = {
   dedicated: 'Dedicated Team (Full-Time Focus)',
@@ -22,6 +21,7 @@ export class ContactFormComponent {
   private readonly fb = inject(FormBuilder);
 
   protected readonly submitState = signal<'idle' | 'success' | 'error'>('idle');
+  protected readonly whatsappChatUrl = WHATSAPP_URL;
 
   protected readonly form = this.fb.nonNullable.group({
     name: ['', Validators.required],
@@ -30,8 +30,17 @@ export class ContactFormComponent {
     message: ['', Validators.required],
   });
 
+  /** A field shows its error once the visitor has left it or tried to submit. */
+  protected showError(control: keyof typeof this.form.controls): boolean {
+    const c = this.form.controls[control];
+    return c.invalid && c.touched;
+  }
+
   protected onSubmit(): void {
-    if (this.form.invalid) return;
+    if (this.form.invalid) {
+      this.form.markAllAsTouched();
+      return;
+    }
     const { name, email, model, message } = this.form.getRawValue();
     const text = [
       'New Website Inquiry',
@@ -41,7 +50,7 @@ export class ContactFormComponent {
       `Engagement Model: ${ENGAGEMENT_MODEL_LABELS[model] ?? model}`,
       `Project Brief: ${message}`,
     ].join('\n');
-    const url = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(text)}`;
+    const url = `${WHATSAPP_URL}?text=${encodeURIComponent(text)}`;
     try {
       window.open(url, '_blank', 'noopener');
       this.submitState.set('success');

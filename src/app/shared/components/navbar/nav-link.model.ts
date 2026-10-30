@@ -8,7 +8,7 @@ export const MAIN_NAV_LINKS: NavLink[] = [
   { labelKey: 'nav_about', path: '/', fragment: 'about' },
   { labelKey: 'nav_concept', path: '/', fragment: 'concept' },
   { labelKey: 'nav_models', path: '/', fragment: 'models' },
-  { labelKey: 'nav_careers', path: '/', fragment: 'careers' },
+  { labelKey: 'nav_careers', path: '/careers.html' },
 ];
 
 export const ERP_NAV_LINKS: NavLink[] = [

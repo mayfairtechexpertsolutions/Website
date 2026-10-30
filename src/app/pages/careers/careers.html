@@ -1,0 +1,44 @@
+<app-page-hero
+  [badge]="'careers_badge' | translate"
+  [title]="'careers_title' | translate"
+  [subtitle]="'careers_subtitle' | translate"
+/>
+
+<section class="mx-auto grid max-w-7xl grid-cols-1 gap-12 px-6 py-24 lg:grid-cols-3" appReveal>
+  <div class="lg:col-span-2">
+    <h2 class="mb-6 font-serif text-2xl font-bold text-mayfair-navy dark:text-white">{{ 'open_positions' | translate }}</h2>
+    <div class="space-y-4">
+      @for (job of jobs; track job.titleKey; let i = $index) {
+        <div appReveal [revealDelay]="i * CARD_STAGGER_MS" class="card card-hover p-6">
+          <div class="mb-2 flex flex-wrap items-center justify-between gap-3">
+            <h3 class="font-serif text-lg font-bold text-mayfair-navy dark:text-white">{{ job.titleKey | translate }}</h3>
+            <span class="rounded-full bg-mayfair-teal/10 px-3 py-1 text-xs font-bold text-mayfair-teal uppercase">{{ job.tagKey | translate }}</span>
+          </div>
+          <p class="text-sm leading-relaxed text-slate-600 dark:text-slate-400">{{ job.descKey | translate }}</p>
+          <div class="mt-4 flex flex-wrap items-center justify-between gap-3 border-t border-slate-100 pt-4 dark:border-slate-700">
+            <span class="text-xs font-semibold tracking-widest text-slate-500 uppercase dark:text-slate-400">
+              <i class="fas fa-earth-africa mr-1 text-mayfair-teal" aria-hidden="true"></i>{{ 'remote_tag' | translate }}
+            </span>
+            <a [href]="applyHref(job.titleKey)" class="inline-flex items-center gap-2 text-sm font-bold text-mayfair-teal hover:underline">
+              {{ 'careers_apply' | translate }} <i class="fas fa-arrow-right text-xs" aria-hidden="true"></i>
+            </a>
+          </div>
+        </div>
+      }
+    </div>
+  </div>
+
+  <aside class="lg:pt-14">
+    <div class="rounded-[2rem] bg-mayfair-navy p-8 text-white lg:sticky lg:top-28">
+      <div class="mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-mayfair-teal/20 text-lg text-mayfair-teal">
+        <i class="fas fa-paper-plane" aria-hidden="true"></i>
+      </div>
+      <h2 class="mb-2 font-serif text-xl font-bold">{{ 'join_title' | translate }}</h2>
+      <p class="mb-6 text-sm leading-relaxed text-slate-300">{{ 'join_desc' | translate }}</p>
+      <a [href]="'mailto:' + jobsEmail" class="btn btn-primary w-full">
+        <i class="fas fa-envelope" aria-hidden="true"></i>{{ 'careers_send_cv' | translate }}
+      </a>
+      <p class="mt-4 text-center text-xs break-all text-slate-400">{{ jobsEmail }}</p>
+    </div>
+  </aside>
+</section>

@@ -8,10 +8,10 @@
       <h1 class="text-gradient-hero mb-8 font-serif text-4xl leading-[1.1] font-bold md:text-6xl" [innerHTML]="'hero_title' | translate"></h1>
       <p class="mb-10 max-w-xl text-lg leading-relaxed text-slate-300 md:text-xl">{{ 'hero_subtitle' | translate }}</p>
       <div class="flex flex-col gap-4 sm:flex-row">
-        <a routerLink="/" fragment="models" class="btn-glow rounded-xl bg-mayfair-teal px-8 py-4 text-center text-lg font-bold text-mayfair-navy shadow-xl transition-all hover:-translate-y-0.5 hover:bg-white hover:text-mayfair-navy">
+        <a routerLink="/" fragment="models" class="btn btn-lg btn-primary btn-glow">
           {{ 'hero_btn_models' | translate }}
         </a>
-        <a routerLink="/" fragment="concept" class="rounded-xl border border-white/20 px-8 py-4 text-center text-lg font-bold text-white transition-all hover:bg-white/10">
+        <a routerLink="/" fragment="concept" class="btn btn-lg btn-outline">
           {{ 'hero_btn_logic' | translate }}
         </a>
       </div>
@@ -40,14 +40,10 @@
 <app-section-divider />
 
 <section id="concept" class="mx-auto max-w-7xl px-6 py-24" appReveal>
-  <div class="mx-auto mb-16 max-w-2xl text-center">
-    <span class="rounded-full bg-mayfair-teal/10 px-3 py-1 text-sm font-bold tracking-widest text-mayfair-teal uppercase">{{ 'concept_badge' | translate }}</span>
-    <h2 class="mt-6 mb-4 font-serif text-3xl font-bold text-mayfair-navy md:text-4xl dark:text-white" [innerHTML]="'concept_title' | translate"></h2>
-    <p class="text-lg text-slate-600 dark:text-slate-300">{{ 'concept_subtitle' | translate }}</p>
-  </div>
+  <app-section-header badgeKey="concept_badge" titleKey="concept_title" subtitleKey="concept_subtitle" />
 
   <div class="relative grid grid-cols-1 gap-8 lg:grid-cols-2">
-    <div class="absolute top-1/2 left-1/2 z-10 hidden h-14 w-14 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border-4 border-white bg-mayfair-navy text-xs font-bold tracking-widest text-mayfair-teal shadow-xl lg:flex dark:border-slate-950">
+    <div class="absolute top-1/2 left-1/2 z-10 hidden h-14 w-14 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border-4 border-white bg-mayfair-navy text-xs font-bold tracking-widest text-mayfair-teal shadow-xl lg:flex dark:border-mayfair-dark">
       VS
     </div>
     <div appReveal class="rounded-[2rem] border border-red-100 bg-red-50/50 p-8 dark:border-red-900/40 dark:bg-red-950/10">
@@ -56,18 +52,12 @@
       </div>
       <span class="text-xs font-bold tracking-widest text-red-400 uppercase">{{ 'concept_rent_sub' | translate }}</span>
       <h3 class="mt-2 mb-6 font-serif text-2xl font-bold text-mayfair-navy dark:text-white">{{ 'concept_rent_title' | translate }}</h3>
-      <div class="mb-4 border-t border-red-100 pt-4 dark:border-red-900/40">
-        <h4 class="mb-1 font-bold text-mayfair-navy dark:text-white">{{ 'concept_rent_li1_head' | translate }}</h4>
-        <p class="text-sm text-slate-600 dark:text-slate-400">{{ 'concept_rent_li1_body' | translate }}</p>
-      </div>
-      <div class="mb-4 border-t border-red-100 pt-4 dark:border-red-900/40">
-        <h4 class="mb-1 font-bold text-mayfair-navy dark:text-white">{{ 'concept_rent_li2_head' | translate }}</h4>
-        <p class="text-sm text-slate-600 dark:text-slate-400">{{ 'concept_rent_li2_body' | translate }}</p>
-      </div>
-      <div class="border-t border-red-100 pt-4 dark:border-red-900/40">
-        <h4 class="mb-1 font-bold text-mayfair-navy dark:text-white">{{ 'concept_rent_li3_head' | translate }}</h4>
-        <p class="text-sm text-slate-600 dark:text-slate-400">{{ 'concept_rent_li3_body' | translate }}</p>
-      </div>
+      @for (n of [1, 2, 3]; track n; let last = $last) {
+        <div class="border-t border-red-100 pt-4 dark:border-red-900/40" [class.mb-4]="!last">
+          <h4 class="mb-1 font-bold text-mayfair-navy dark:text-white">{{ 'concept_rent_li' + n + '_head' | translate }}</h4>
+          <p class="text-sm text-slate-600 dark:text-slate-400">{{ 'concept_rent_li' + n + '_body' | translate }}</p>
+        </div>
+      }
       <p class="mt-6 text-xs font-bold text-red-400">{{ 'concept_rent_impact' | translate }}</p>
     </div>
 
@@ -77,18 +67,12 @@
       </div>
       <span class="text-xs font-bold tracking-widest text-mayfair-teal uppercase">{{ 'concept_own_badge' | translate }}</span>
       <h3 class="mt-2 mb-6 font-serif text-2xl font-bold">{{ 'concept_own_title' | translate }}</h3>
-      <div class="mb-4 border-t border-white/10 pt-4">
-        <h4 class="mb-1 font-bold">{{ 'concept_own_li1_head' | translate }}</h4>
-        <p class="text-sm text-slate-300">{{ 'concept_own_li1_body' | translate }}</p>
-      </div>
-      <div class="mb-4 border-t border-white/10 pt-4">
-        <h4 class="mb-1 font-bold">{{ 'concept_own_li2_head' | translate }}</h4>
-        <p class="text-sm text-slate-300">{{ 'concept_own_li2_body' | translate }}</p>
-      </div>
-      <div class="border-t border-white/10 pt-4">
-        <h4 class="mb-1 font-bold">{{ 'concept_own_li3_head' | translate }}</h4>
-        <p class="text-sm text-slate-300">{{ 'concept_own_li3_body' | translate }}</p>
-      </div>
+      @for (n of [1, 2, 3]; track n; let last = $last) {
+        <div class="border-t border-white/10 pt-4" [class.mb-4]="!last">
+          <h4 class="mb-1 font-bold">{{ 'concept_own_li' + n + '_head' | translate }}</h4>
+          <p class="text-sm text-slate-300">{{ 'concept_own_li' + n + '_body' | translate }}</p>
+        </div>
+      }
       <p class="mt-6 text-xs font-bold text-mayfair-teal">{{ 'concept_own_impact' | translate }}</p>
     </div>
   </div>
@@ -101,65 +85,32 @@
 </section>
 
 <section id="billing" class="mx-auto max-w-7xl px-6 py-24" appReveal>
-  <div class="mx-auto mb-16 max-w-2xl text-center">
-    <span class="rounded-full bg-mayfair-teal/10 px-3 py-1 text-sm font-bold tracking-widest text-mayfair-teal uppercase">{{ 'billing_badge' | translate }}</span>
-    <h2 class="mt-6 mb-4 font-serif text-3xl font-bold text-mayfair-navy md:text-4xl dark:text-white">{{ 'billing_title' | translate }}</h2>
-    <p class="text-lg text-slate-600 dark:text-slate-300">{{ 'billing_subtitle' | translate }}</p>
-  </div>
+  <app-section-header badgeKey="billing_badge" titleKey="billing_title" subtitleKey="billing_subtitle" />
   <div class="grid grid-cols-1 gap-8 lg:grid-cols-3">
-    <div class="rounded-2xl border border-slate-200 bg-white p-8 card-hover dark:border-slate-700 dark:bg-slate-900">
-      <div class="mb-4 flex items-center justify-between">
-        <div class="font-serif text-3xl font-bold text-mayfair-teal/30">01.</div>
-        <div class="flex h-11 w-11 items-center justify-center rounded-xl bg-mayfair-teal/10 text-lg text-mayfair-teal">
-          <i class="fas fa-stopwatch"></i>
+    @for (mode of billingModes; track mode.titleKey; let i = $index) {
+      <div appReveal [revealDelay]="i * CARD_STAGGER_MS" class="card card-hover p-8">
+        <div class="mb-4 flex items-center justify-between">
+          <div class="font-serif text-3xl font-bold text-mayfair-teal/30">{{ (i + 1).toString().padStart(2, '0') }}.</div>
+          <div class="flex h-11 w-11 items-center justify-center rounded-xl bg-mayfair-teal/10 text-lg text-mayfair-teal">
+            <i class="fas" [class]="mode.icon"></i>
+          </div>
         </div>
+        <h3 class="mb-3 font-serif text-xl font-bold text-mayfair-navy dark:text-white">{{ mode.titleKey | translate }}</h3>
+        <p class="mb-4 text-sm leading-relaxed text-slate-600 dark:text-slate-400">{{ mode.descKey | translate }}</p>
+        <ul class="space-y-1 text-xs font-semibold text-mayfair-teal">
+          @for (key of mode.pointKeys; track key) {
+            <li>{{ key | translate }}</li>
+          }
+        </ul>
       </div>
-      <h3 class="mb-3 font-serif text-xl font-bold text-mayfair-navy dark:text-white">{{ 'bill1_title' | translate }}</h3>
-      <p class="mb-4 text-sm leading-relaxed text-slate-600 dark:text-slate-400">{{ 'bill1_desc' | translate }}</p>
-      <ul class="space-y-1 text-xs font-semibold text-mayfair-teal">
-        <li>{{ 'bill1_li1' | translate }}</li>
-        <li>{{ 'bill1_li2' | translate }}</li>
-      </ul>
-    </div>
-    <div class="rounded-2xl border border-slate-200 bg-white p-8 card-hover dark:border-slate-700 dark:bg-slate-900">
-      <div class="mb-4 flex items-center justify-between">
-        <div class="font-serif text-3xl font-bold text-mayfair-teal/30">02.</div>
-        <div class="flex h-11 w-11 items-center justify-center rounded-xl bg-mayfair-teal/10 text-lg text-mayfair-teal">
-          <i class="fas fa-diagram-project"></i>
-        </div>
-      </div>
-      <h3 class="mb-3 font-serif text-xl font-bold text-mayfair-navy dark:text-white">{{ 'bill2_title' | translate }}</h3>
-      <p class="mb-4 text-sm leading-relaxed text-slate-600 dark:text-slate-400">{{ 'bill2_desc' | translate }}</p>
-      <ul class="space-y-1 text-xs font-semibold text-mayfair-teal">
-        <li>{{ 'bill2_li1' | translate }}</li>
-        <li>{{ 'bill2_li2' | translate }}</li>
-      </ul>
-    </div>
-    <div class="rounded-2xl border border-slate-200 bg-white p-8 card-hover dark:border-slate-700 dark:bg-slate-900">
-      <div class="mb-4 flex items-center justify-between">
-        <div class="font-serif text-3xl font-bold text-mayfair-teal/30">03.</div>
-        <div class="flex h-11 w-11 items-center justify-center rounded-xl bg-mayfair-teal/10 text-lg text-mayfair-teal">
-          <i class="fas fa-compass"></i>
-        </div>
-      </div>
-      <h3 class="mb-3 font-serif text-xl font-bold text-mayfair-navy dark:text-white">{{ 'bill3_title' | translate }}</h3>
-      <p class="mb-4 text-sm leading-relaxed text-slate-600 dark:text-slate-400">{{ 'bill3_desc' | translate }}</p>
-      <ul class="space-y-1 text-xs font-semibold text-mayfair-teal">
-        <li>{{ 'bill3_li1' | translate }}</li>
-        <li>{{ 'bill3_li2' | translate }}</li>
-      </ul>
-    </div>
+    }
   </div>
   <p class="mx-auto mt-10 max-w-2xl text-center text-sm text-slate-500 dark:text-slate-400">{{ 'billing_footer' | translate }}</p>
 </section>
 
 <section id="models" class="bg-slate-50 px-6 py-24 dark:bg-white/[0.02]" appReveal>
   <div class="mx-auto max-w-7xl">
-    <div class="mx-auto mb-16 max-w-2xl text-center">
-      <span class="rounded-full bg-mayfair-teal/10 px-3 py-1 text-sm font-bold tracking-widest text-mayfair-teal uppercase">{{ 'models_badge' | translate }}</span>
-      <h2 class="mt-6 mb-4 font-serif text-3xl font-bold text-mayfair-navy md:text-4xl dark:text-white">{{ 'models_title' | translate }}</h2>
-      <p class="text-lg text-slate-600 dark:text-slate-300">{{ 'models_subtitle' | translate }}</p>
-    </div>
+    <app-section-header badgeKey="models_badge" titleKey="models_title" subtitleKey="models_subtitle" />
     <app-models-accordion [models]="engagementModels" />
   </div>
 </section>
@@ -167,14 +118,10 @@
 <app-section-divider />
 
 <section id="products" class="mx-auto max-w-7xl px-6 py-24" appReveal>
-  <div class="mx-auto mb-16 max-w-2xl text-center">
-    <span class="rounded-full bg-mayfair-teal/10 px-3 py-1 text-sm font-bold tracking-widest text-mayfair-teal uppercase">{{ 'products_section_badge' | translate }}</span>
-    <h2 class="mt-6 mb-4 font-serif text-3xl font-bold text-mayfair-navy md:text-4xl dark:text-white">{{ 'products_section_title' | translate }}</h2>
-    <p class="text-lg text-slate-600 dark:text-slate-300">{{ 'products_section_subtitle' | translate }}</p>
-  </div>
+  <app-section-header badgeKey="products_section_badge" titleKey="products_section_title" subtitleKey="products_section_subtitle" />
   <app-products-grid [fillPlaceholders]="true" />
   <div class="mt-12 text-center">
-    <a routerLink="/products.html" class="inline-block rounded-xl bg-mayfair-navy px-10 py-4 text-lg font-bold text-white shadow-xl transition-all hover:bg-mayfair-teal hover:text-mayfair-navy">
+    <a routerLink="/products.html" class="btn btn-lg btn-navy">
       {{ 'products_section_cta' | translate }}
     </a>
   </div>
@@ -183,8 +130,7 @@
 <section id="about" class="bg-mayfair-navy px-6 py-24 text-white" appReveal>
   <div class="mx-auto grid max-w-7xl grid-cols-1 gap-16 lg:grid-cols-2">
     <div>
-      <span class="rounded-full bg-mayfair-teal/10 px-3 py-1 text-sm font-bold tracking-widest text-mayfair-teal uppercase">{{ 'about_badge' | translate }}</span>
-      <h2 class="mt-6 mb-6 font-serif text-3xl font-bold md:text-4xl" [innerHTML]="'about_title' | translate"></h2>
+      <app-section-header badgeKey="about_badge" titleKey="about_title" align="left" tone="dark" />
       <p class="mb-4 leading-relaxed text-slate-300" [innerHTML]="'about_p1' | translate"></p>
       <p class="mb-8 leading-relaxed text-slate-300" [innerHTML]="'about_p2' | translate"></p>
       <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
@@ -213,45 +159,69 @@
       <span class="mb-2 block text-xs font-bold tracking-widest text-mayfair-teal uppercase">{{ 'materials_badge' | translate }}</span>
       <h3 class="mb-8 font-serif text-2xl font-bold">{{ 'materials_title' | translate }}</h3>
       <div class="space-y-6">
-        <div class="flex items-start gap-4">
-          <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-mayfair-teal/20 text-mayfair-teal"><i class="fas fa-bolt"></i></div>
-          <div>
-            <h4 class="mb-1 font-bold">{{ 'mat1_title' | translate }}</h4>
-            <p class="text-sm text-slate-300">{{ 'mat1_desc' | translate }}</p>
+        @for (mat of materials; track mat.titleKey) {
+          <div class="flex items-start gap-4">
+            <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-mayfair-teal/20 text-mayfair-teal">
+              <i class="fas" [class]="mat.icon"></i>
+            </div>
+            <div>
+              <h4 class="mb-1 font-bold">{{ mat.titleKey | translate }}</h4>
+              <p class="text-sm text-slate-300">{{ mat.descKey | translate }}</p>
+            </div>
           </div>
-        </div>
-        <div class="flex items-start gap-4">
-          <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-mayfair-teal/20 text-mayfair-teal"><i class="fas fa-palette"></i></div>
-          <div>
-            <h4 class="mb-1 font-bold">{{ 'mat2_title' | translate }}</h4>
-            <p class="text-sm text-slate-300">{{ 'mat2_desc' | translate }}</p>
-          </div>
-        </div>
-        <div class="flex items-start gap-4">
-          <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-mayfair-teal/20 text-mayfair-teal"><i class="fas fa-mobile-screen"></i></div>
-          <div>
-            <h4 class="mb-1 font-bold">{{ 'mat3_title' | translate }}</h4>
-            <p class="text-sm text-slate-300">{{ 'mat3_desc' | translate }}</p>
-          </div>
-        </div>
-        <div class="flex items-start gap-4">
-          <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-mayfair-teal/20 text-mayfair-teal"><i class="fas fa-vault"></i></div>
-          <div>
-            <h4 class="mb-1 font-bold">{{ 'mat4_title' | translate }}</h4>
-            <p class="text-sm text-slate-300">{{ 'mat4_desc' | translate }}</p>
-          </div>
-        </div>
+        }
       </div>
       <p class="mt-8 border-t border-white/10 pt-6 text-sm text-slate-400 italic">{{ 'materials_footer' | translate }}</p>
     </div>
   </div>
 </section>
 
-<section id="impact" class="mx-auto max-w-7xl px-6 py-24" appReveal>
-  <div class="mx-auto mb-16 max-w-2xl text-center">
-    <span class="rounded-full bg-mayfair-teal/10 px-3 py-1 text-sm font-bold tracking-widest text-mayfair-teal uppercase">{{ 'stats_badge' | translate }}</span>
-    <h2 class="mt-6 font-serif text-3xl font-bold text-mayfair-navy md:text-4xl dark:text-white" [innerHTML]="'stats_title' | translate"></h2>
+<section id="stack" class="bg-slate-50 px-6 py-24 dark:bg-white/[0.02]" appReveal>
+  <div class="mx-auto max-w-5xl">
+    <app-section-header badgeKey="stack_badge" titleKey="stack_title" subtitleKey="stack_subtitle" />
+
+    <!-- Layers read top (what users touch) to bottom (what it runs on), joined by a teal "backbone" -->
+    <ol class="relative space-y-6">
+      <span
+        class="absolute top-10 bottom-10 left-6 w-px bg-gradient-to-b from-mayfair-teal/70 via-mayfair-teal/30 to-mayfair-teal/70 md:left-7"
+        aria-hidden="true"
+      ></span>
+      @for (layer of techStack; track layer.nameKey; let i = $index) {
+        <li appReveal [revealDelay]="i * CARD_STAGGER_MS" class="relative flex items-center gap-4 md:gap-6">
+          <div
+            class="relative z-10 flex size-12 shrink-0 items-center justify-center rounded-2xl bg-mayfair-navy text-lg text-mayfair-teal shadow-lg ring-4 ring-slate-50 md:size-14 md:text-xl dark:ring-mayfair-dark"
+            aria-hidden="true"
+          >
+            <i class="fas" [class]="layer.icon"></i>
+          </div>
+          <div class="card card-hover grid flex-1 gap-4 p-6 md:grid-cols-2 md:items-center">
+            <div>
+              <p class="text-xs font-bold tracking-widest text-mayfair-teal">{{ (i + 1).toString().padStart(2, '0') }}</p>
+              <h3 class="font-serif text-xl font-bold text-mayfair-navy dark:text-white">{{ layer.nameKey | translate }}</h3>
+              <p class="mt-1 text-sm leading-relaxed text-slate-600 dark:text-slate-400">{{ layer.whyKey | translate }}</p>
+            </div>
+            <ul class="flex flex-wrap gap-2 md:justify-end">
+              @for (item of layer.items; track item.label) {
+                <li
+                  class="rounded-full border border-slate-200 bg-slate-50 px-3 py-1.5 text-sm font-semibold text-mayfair-navy dark:border-slate-700 dark:bg-white/5 dark:text-slate-200"
+                >
+                  {{ item.translate ? (item.label | translate) : item.label }}
+                </li>
+              }
+            </ul>
+          </div>
+        </li>
+      }
+    </ol>
+
+    <p class="mx-auto mt-12 max-w-2xl text-center text-sm font-semibold text-slate-600 dark:text-slate-300">
+      <i class="fas fa-arrows-rotate mr-2 text-mayfair-teal" aria-hidden="true"></i>{{ 'stack_footer' | translate }}
+    </p>
   </div>
+</section>
+
+<section id="impact" class="mx-auto max-w-7xl px-6 py-24" appReveal>
+  <app-section-header badgeKey="stats_badge" titleKey="stats_title" />
   <app-stats-tickets [stats]="stats" />
   <p class="mt-12 text-center text-sm font-semibold text-slate-600 dark:text-slate-300">
     <i class="fas fa-scale-balanced mr-2 text-mayfair-teal"></i>{{ 'stats_footer' | translate }}
@@ -261,122 +231,34 @@
 <app-section-divider />
 
 <section id="roadmap" class="mx-auto max-w-7xl px-6 py-24" appReveal>
-  <div class="mx-auto mb-16 max-w-2xl text-center">
-    <span class="rounded-full bg-mayfair-teal/10 px-3 py-1 text-sm font-bold tracking-widest text-mayfair-teal uppercase">{{ 'roadmap_badge' | translate }}</span>
-    <h2 class="mt-6 mb-4 font-serif text-3xl font-bold text-mayfair-navy md:text-4xl dark:text-white">{{ 'roadmap_title' | translate }}</h2>
-    <p class="text-lg text-slate-600 dark:text-slate-300">{{ 'roadmap_subtitle' | translate }}</p>
-  </div>
+  <app-section-header badgeKey="roadmap_badge" titleKey="roadmap_title" subtitleKey="roadmap_subtitle" />
   <div class="relative grid grid-cols-1 gap-6 md:grid-cols-5">
     <div class="absolute top-0 right-[10%] left-[10%] hidden h-px bg-slate-200 md:block dark:bg-slate-700"></div>
 
-    <div class="relative rounded-2xl border border-slate-200 bg-white p-6 pt-8 transition hover:-translate-y-1 hover:border-mayfair-teal hover:shadow-lg dark:border-slate-700 dark:bg-slate-900">
-      <div class="absolute -top-5 left-1/2 z-10 flex h-10 w-10 -translate-x-1/2 items-center justify-center rounded-full bg-mayfair-teal font-serif text-sm font-bold text-mayfair-navy shadow-lg ring-4 ring-white dark:ring-slate-950">1</div>
-      <h3 class="mb-2 font-serif font-bold text-mayfair-navy dark:text-white">{{ 'step1_title' | translate }}</h3>
-      <p class="mb-3 text-xs leading-relaxed text-slate-500 dark:text-slate-400">{{ 'step1_desc' | translate }}</p>
-      <p class="text-[10px] font-bold tracking-widest text-mayfair-teal uppercase">{{ 'step1_outcome' | translate }}</p>
-    </div>
-    <div class="relative rounded-2xl border border-slate-200 bg-white p-6 pt-8 transition hover:-translate-y-1 hover:border-mayfair-teal hover:shadow-lg dark:border-slate-700 dark:bg-slate-900">
-      <div class="absolute -top-5 left-1/2 z-10 flex h-10 w-10 -translate-x-1/2 items-center justify-center rounded-full bg-mayfair-teal font-serif text-sm font-bold text-mayfair-navy shadow-lg ring-4 ring-white dark:ring-slate-950">2</div>
-      <h3 class="mb-2 font-serif font-bold text-mayfair-navy dark:text-white">{{ 'step2_title' | translate }}</h3>
-      <p class="mb-3 text-xs leading-relaxed text-slate-500 dark:text-slate-400">{{ 'step2_desc' | translate }}</p>
-      <p class="text-[10px] font-bold tracking-widest text-mayfair-teal uppercase">{{ 'step2_outcome' | translate }}</p>
-    </div>
-    <div class="relative rounded-2xl border border-slate-200 bg-white p-6 pt-8 transition hover:-translate-y-1 hover:border-mayfair-teal hover:shadow-lg dark:border-slate-700 dark:bg-slate-900">
-      <div class="absolute -top-5 left-1/2 z-10 flex h-10 w-10 -translate-x-1/2 items-center justify-center rounded-full bg-mayfair-teal font-serif text-sm font-bold text-mayfair-navy shadow-lg ring-4 ring-white dark:ring-slate-950">3</div>
-      <h3 class="mb-2 font-serif font-bold text-mayfair-navy dark:text-white">{{ 'step3_title' | translate }}</h3>
-      <p class="mb-3 text-xs leading-relaxed text-slate-500 dark:text-slate-400">{{ 'step3_desc' | translate }}</p>
-      <p class="text-[10px] font-bold tracking-widest text-mayfair-teal uppercase">{{ 'step3_outcome' | translate }}</p>
-    </div>
-    <div class="relative rounded-2xl border border-slate-200 bg-white p-6 pt-8 transition hover:-translate-y-1 hover:border-mayfair-teal hover:shadow-lg dark:border-slate-700 dark:bg-slate-900">
-      <div class="absolute -top-5 left-1/2 z-10 flex h-10 w-10 -translate-x-1/2 items-center justify-center rounded-full bg-mayfair-teal font-serif text-sm font-bold text-mayfair-navy shadow-lg ring-4 ring-white dark:ring-slate-950">4</div>
-      <h3 class="mb-2 font-serif font-bold text-mayfair-navy dark:text-white">{{ 'step4_title' | translate }}</h3>
-      <p class="mb-3 text-xs leading-relaxed text-slate-500 dark:text-slate-400">{{ 'step4_desc' | translate }}</p>
-      <p class="text-[10px] font-bold tracking-widest text-mayfair-teal uppercase">{{ 'step4_outcome' | translate }}</p>
-    </div>
-    <div class="relative rounded-2xl border border-slate-200 bg-white p-6 pt-8 transition hover:-translate-y-1 hover:border-mayfair-teal hover:shadow-lg dark:border-slate-700 dark:bg-slate-900">
-      <div class="absolute -top-5 left-1/2 z-10 flex h-10 w-10 -translate-x-1/2 items-center justify-center rounded-full bg-mayfair-teal font-serif text-sm font-bold text-mayfair-navy shadow-lg ring-4 ring-white dark:ring-slate-950">5</div>
-      <h3 class="mb-2 font-serif font-bold text-mayfair-navy dark:text-white">{{ 'step5_title' | translate }}</h3>
-      <p class="mb-3 text-xs leading-relaxed text-slate-500 dark:text-slate-400">{{ 'step5_desc' | translate }}</p>
-      <p class="text-[10px] font-bold tracking-widest text-mayfair-teal uppercase">{{ 'step5_outcome' | translate }}</p>
-    </div>
+    @for (step of roadmapSteps; track step.titleKey; let i = $index) {
+      <div class="card card-hover relative p-6 pt-8">
+        <div class="absolute -top-5 left-1/2 z-10 flex h-10 w-10 -translate-x-1/2 items-center justify-center rounded-full bg-mayfair-teal font-serif text-sm font-bold text-mayfair-navy shadow-lg ring-4 ring-white dark:ring-mayfair-dark">
+          {{ i + 1 }}
+        </div>
+        <h3 class="mb-2 font-serif font-bold text-mayfair-navy dark:text-white">{{ step.titleKey | translate }}</h3>
+        <p class="mb-3 text-xs leading-relaxed text-slate-500 dark:text-slate-400">{{ step.descKey | translate }}</p>
+        <p class="text-xs font-bold tracking-widest text-mayfair-teal uppercase">{{ step.outcomeKey | translate }}</p>
+      </div>
+    }
   </div>
 
   <div class="mt-16 rounded-[2rem] bg-mayfair-navy p-10 text-center text-white">
     <h3 class="mb-3 font-serif text-2xl font-bold">{{ 'roadmap_banner_title' | translate }}</h3>
     <p class="mx-auto mb-6 max-w-2xl text-slate-300">{{ 'roadmap_banner_desc' | translate }}</p>
-    <a routerLink="/" fragment="contact" class="inline-block rounded-xl bg-mayfair-teal px-8 py-3 font-bold text-mayfair-navy transition hover:bg-white hover:text-mayfair-navy">
+    <a routerLink="/" fragment="contact" class="btn btn-primary">
       {{ 'roadmap_btn' | translate }}
     </a>
   </div>
 </section>
 
-<section id="careers" class="bg-slate-50 px-6 py-24 dark:bg-white/[0.02]" appReveal>
-  <div class="mx-auto grid max-w-7xl grid-cols-1 gap-16 lg:grid-cols-2">
-    <div>
-      <span class="rounded-full bg-mayfair-teal/10 px-3 py-1 text-sm font-bold tracking-widest text-mayfair-teal uppercase">{{ 'careers_badge' | translate }}</span>
-      <h2 class="mt-6 mb-6 font-serif text-3xl font-bold text-mayfair-navy md:text-4xl dark:text-white" [innerHTML]="'careers_title' | translate"></h2>
-      <p class="leading-relaxed text-slate-600 dark:text-slate-300">{{ 'careers_subtitle' | translate }}</p>
-      <div class="mt-8 rounded-2xl border border-slate-200 bg-white p-6 dark:border-slate-700 dark:bg-slate-900">
-        <h4 class="mb-2 font-serif font-bold text-mayfair-navy dark:text-white">{{ 'join_title' | translate }}</h4>
-        <p class="mb-4 text-sm text-slate-600 dark:text-slate-400">{{ 'join_desc' | translate }}</p>
-        <a href="mailto:jobs@mayfairtechexpertsolutions.com" class="inline-block font-bold text-mayfair-teal hover:underline">jobs&#64;mayfairtechexpertsolutions.com →</a>
-      </div>
-    </div>
-
-    <div>
-      <p class="mb-4 text-xs font-bold tracking-widest text-slate-400 uppercase">{{ 'open_positions' | translate }}</p>
-      <div class="space-y-4">
-        <div class="rounded-2xl border border-slate-200 bg-white p-5 transition hover:border-mayfair-teal hover:shadow-md dark:border-slate-700 dark:bg-slate-900">
-          <div class="mb-1 flex items-center justify-between">
-            <h4 class="font-serif font-bold text-mayfair-navy dark:text-white">{{ 'job1_title' | translate }}</h4>
-            <span class="rounded-full bg-mayfair-teal/10 px-2 py-0.5 text-[10px] font-bold text-mayfair-teal uppercase">{{ 'job1_tag' | translate }}</span>
-          </div>
-          <p class="text-sm text-slate-500 dark:text-slate-400">{{ 'job1_desc' | translate }}</p>
-          <p class="mt-2 text-[10px] font-semibold tracking-widest text-slate-400 uppercase">{{ 'remote_tag' | translate }}</p>
-        </div>
-        <div class="rounded-2xl border border-slate-200 bg-white p-5 transition hover:border-mayfair-teal hover:shadow-md dark:border-slate-700 dark:bg-slate-900">
-          <div class="mb-1 flex items-center justify-between">
-            <h4 class="font-serif font-bold text-mayfair-navy dark:text-white">{{ 'job2_title' | translate }}</h4>
-            <span class="rounded-full bg-mayfair-teal/10 px-2 py-0.5 text-[10px] font-bold text-mayfair-teal uppercase">{{ 'job2_tag' | translate }}</span>
-          </div>
-          <p class="text-sm text-slate-500 dark:text-slate-400">{{ 'job2_desc' | translate }}</p>
-          <p class="mt-2 text-[10px] font-semibold tracking-widest text-slate-400 uppercase">{{ 'remote_tag' | translate }}</p>
-        </div>
-        <div class="rounded-2xl border border-slate-200 bg-white p-5 transition hover:border-mayfair-teal hover:shadow-md dark:border-slate-700 dark:bg-slate-900">
-          <div class="mb-1 flex items-center justify-between">
-            <h4 class="font-serif font-bold text-mayfair-navy dark:text-white">{{ 'job3_title' | translate }}</h4>
-            <span class="rounded-full bg-mayfair-teal/10 px-2 py-0.5 text-[10px] font-bold text-mayfair-teal uppercase">{{ 'job3_tag' | translate }}</span>
-          </div>
-          <p class="text-sm text-slate-500 dark:text-slate-400">{{ 'job3_desc' | translate }}</p>
-          <p class="mt-2 text-[10px] font-semibold tracking-widest text-slate-400 uppercase">{{ 'remote_tag' | translate }}</p>
-        </div>
-        <div class="rounded-2xl border border-slate-200 bg-white p-5 transition hover:border-mayfair-teal hover:shadow-md dark:border-slate-700 dark:bg-slate-900">
-          <div class="mb-1 flex items-center justify-between">
-            <h4 class="font-serif font-bold text-mayfair-navy dark:text-white">{{ 'job4_title' | translate }}</h4>
-            <span class="rounded-full bg-mayfair-teal/10 px-2 py-0.5 text-[10px] font-bold text-mayfair-teal uppercase">{{ 'job4_tag' | translate }}</span>
-          </div>
-          <p class="text-sm text-slate-500 dark:text-slate-400">{{ 'job4_desc' | translate }}</p>
-          <p class="mt-2 text-[10px] font-semibold tracking-widest text-slate-400 uppercase">{{ 'remote_tag' | translate }}</p>
-        </div>
-        <div class="rounded-2xl border border-slate-200 bg-white p-5 transition hover:border-mayfair-teal hover:shadow-md dark:border-slate-700 dark:bg-slate-900">
-          <div class="mb-1 flex items-center justify-between">
-            <h4 class="font-serif font-bold text-mayfair-navy dark:text-white">{{ 'job5_title' | translate }}</h4>
-            <span class="rounded-full bg-mayfair-teal/10 px-2 py-0.5 text-[10px] font-bold text-mayfair-teal uppercase">{{ 'job5_tag' | translate }}</span>
-          </div>
-          <p class="text-sm text-slate-500 dark:text-slate-400">{{ 'job5_desc' | translate }}</p>
-          <p class="mt-2 text-[10px] font-semibold tracking-widest text-slate-400 uppercase">{{ 'remote_tag' | translate }}</p>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
 <section id="contact" class="bg-mayfair-navy px-6 py-24" appReveal>
   <div class="mx-auto max-w-3xl">
-    <div class="mb-10 text-center">
-      <span class="rounded-full bg-mayfair-teal/10 px-3 py-1 text-sm font-bold tracking-widest text-mayfair-teal uppercase">{{ 'contact_badge' | translate }}</span>
-      <h2 class="mt-6 font-serif text-3xl font-bold text-white md:text-4xl">{{ 'contact_title' | translate }}</h2>
-    </div>
+    <app-section-header badgeKey="contact_badge" titleKey="contact_title" tone="dark" />
     <app-contact-form />
   </div>
 </section>
